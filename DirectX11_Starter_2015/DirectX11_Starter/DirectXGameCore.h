@@ -17,6 +17,13 @@
 
 #include "dxerr.h"
 
+#if defined(DEBUG) | defined(_DEBUG)
+#define Assert(def) if((def)){ *(int*)0 = 0; }
+#else
+#define Assert(def)
+#endif
+
+
 // --------------------------------------------------------
 // Convenience macro for releasing COM objects.
 //

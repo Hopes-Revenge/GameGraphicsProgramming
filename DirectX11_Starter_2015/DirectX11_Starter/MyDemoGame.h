@@ -4,6 +4,9 @@
 #include "DirectXGameCore.h"
 #include "SimpleShader.h"
 
+#include "Mesh.h"
+#include "DrawnMesh.h"
+
 // Include run-time memory checking in debug builds, so 
 // we can be notified of memory leaks
 #if defined(DEBUG) || defined(_DEBUG)
@@ -42,6 +45,13 @@ private:
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
+
+	Mesh* mesh1;
+	Mesh* mesh2;
+	Mesh* mesh3;
+	DrawnMesh* drawnMesh1;
+	DrawnMesh* drawnMesh2;
+	DrawnMesh* drawnMesh3;
 
 	// Wrappers for DirectX shaders to provide simplified functionality
 	SimpleVertexShader* vertexShader;
