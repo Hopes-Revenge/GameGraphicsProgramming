@@ -40,5 +40,9 @@ void Transform::RecalculateWorldMatrix()
 {
 	if (!isDirty) return;//Dont know if I want to keep it.
 	isDirty = false;
-	//DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(position);
+	DirectX::XMMATRIX  calculatedWorldMatrix =
+		DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&scale)) *
+		DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&rotation)) *
+		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&position));
+	DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(calculatedWorldMatrix));
 }
