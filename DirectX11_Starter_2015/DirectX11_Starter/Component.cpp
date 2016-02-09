@@ -14,6 +14,10 @@ Component::~Component()
 	//Let the entity handle its own deletion
 }
 
+void Component::Init()
+{
+}
+
 void Component::Added()
 {
 }

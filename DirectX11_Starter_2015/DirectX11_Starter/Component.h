@@ -10,6 +10,7 @@ public:
 	Component();
 	~Component();
 
+	virtual void Init();//This is going to be called the before the first update of the object, still have to decide how to do this
 	virtual void Added();
 	virtual void Removed();
 	virtual void Update();
@@ -23,6 +24,7 @@ public:
 	unsigned __int8 GetIndex() { return index; }
 private:
 	Entity* parrentEntity;
+	//Index is limited to [0, 254] if you want more components than that too bad
 	unsigned __int8 index;
 };
 

@@ -1,6 +1,7 @@
-﻿  Component.cpp
-  Generating Code...
-  Compiling...
+﻿  compilation object save succeeded; see D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\PixelShader.cso
+  Transform.cpp
   Entity.cpp
+  Component.cpp
   Generating Code...
+  LINK : D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\DirectX11_Starter.exe not found or not built by the last incremental link; performing full link
   DirectX11_Starter.vcxproj -> D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\DirectX11_Starter.exe

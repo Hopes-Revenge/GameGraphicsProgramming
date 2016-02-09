@@ -9,16 +9,23 @@ Entity::Entity()
 	for (int c = 0; c < MAX_NUM_COMPONENTS; ++c) {
 		components[c] = Component::EMPTY;//Just to be sure;
 	}
+	transform = new Transform();
 }
 
 
 Entity::~Entity()
 {
+	for (int c = 0; c < MAX_NUM_COMPONENTS; ++c) {
+		components[c].Removed();
+	}
 	delete[] components;
+	delete transform;
 }
 
 void Entity::AddComponent(Component &newComponent)
 {
+	//Right now we always add the component to be updated, this will change in the future
+
 	//if (newComponent == nullptr) return;
 	//If we are at max capacity return
 	if (numComponents + 1 >= MAX_NUM_COMPONENTS) return;
