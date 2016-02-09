@@ -1,16 +1,29 @@
 #include "Component.h"
 
-
+const Component Component::EMPTY = Component();
 
 Component::Component()
 {
 	parrentEntity = nullptr;
+	index = UNINDEXED;
 }
 
 
 Component::~Component()
 {
 	//Let the entity handle its own deletion
+}
+
+void Component::Added()
+{
+}
+
+void Component::Removed()
+{
+}
+
+void Component::Update()
+{
 }
 
 void Component::SetEntiy(Entity * newParrentEntity)

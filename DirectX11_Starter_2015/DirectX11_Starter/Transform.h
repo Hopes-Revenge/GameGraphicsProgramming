@@ -4,6 +4,7 @@
 class Transform
 {
 public:
+	const static Transform NO_PARRENT;
 	Transform();
 	~Transform();
 

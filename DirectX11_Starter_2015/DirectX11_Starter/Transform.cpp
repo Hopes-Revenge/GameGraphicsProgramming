@@ -1,11 +1,14 @@
 #include "Transform.h"
 
-
+const Transform Transform::NO_PARRENT = Transform();
 
 Transform::Transform()
 {
 	isDirty = true;
 	parrent = nullptr;
+	position = DirectX::XMFLOAT3();
+	rotation = DirectX::XMFLOAT3();
+	scale = DirectX::XMFLOAT3(1, 1, 1);
 }
 
 
@@ -44,5 +47,6 @@ void Transform::RecalculateWorldMatrix()
 		DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&scale)) *
 		DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&rotation)) *
 		DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&position));
-	DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(calculatedWorldMatrix));
+	DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(
+		DirectX::XMMatrixMultiply(calculatedWorldMatrix, DirectX::XMLoadFloat4x4(&parrent->GetWorldMatrix()))));
 }
