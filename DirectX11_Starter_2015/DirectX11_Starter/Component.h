@@ -22,9 +22,11 @@ public:
 	void SetIndex(unsigned __int8 newIndex) { index = newIndex; }
 	Entity* GetEntity() { return parrentEntity; }
 	unsigned __int8 GetIndex() { return index; }
+	bool GetHasBeenInialized() const { return hasBeenInialized; }
 private:
 	Entity* parrentEntity;
 	//Index is limited to [0, 254] if you want more components than that too bad
 	unsigned __int8 index;
+	bool hasBeenInialized;
 };
 

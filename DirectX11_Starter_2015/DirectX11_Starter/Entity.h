@@ -18,9 +18,9 @@ public:
 
 	int GetNumberOfComponents() { return numComponents; }
 	int GetNumberOfUpdatedComponents() { return lastUpdatedComponentIndex + 1; }
-	Transform* const GetTransform() { return transform; }
+	Transform const GetTransform() { return transform; }
 private:
-	Transform* transform;
+	Transform transform;
 	Component* components = new Component[MAX_NUM_COMPONENTS];
 	//Number of components that we have actually created [0, MAX_NUM_COMPONENTS)
 	int numComponents;

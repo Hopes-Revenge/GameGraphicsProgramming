@@ -291,10 +291,6 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 	//    you'll need to swap the current shaders before each draw
 	vertexShader->SetShader(true);
 	pixelShader->SetShader(true);
-	
-	drawnMesh1->Draw();
-	drawnMesh2->Draw();
-	drawnMesh3->Draw();
 
 
 	// Present the buffer

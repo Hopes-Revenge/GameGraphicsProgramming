@@ -1,4 +1,5 @@
 #include "Component.h"
+#include "Entity.h"
 
 const Component Component::EMPTY = Component();
 
@@ -6,6 +7,7 @@ Component::Component()
 {
 	parrentEntity = nullptr;
 	index = UNINDEXED;
+	hasBeenInialized = hasBeenInialized;
 }
 
 
@@ -16,6 +18,7 @@ Component::~Component()
 
 void Component::Init()
 {
+	hasBeenInialized = true;
 }
 
 void Component::Added()

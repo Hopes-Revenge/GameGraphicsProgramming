@@ -1,18 +1,22 @@
 #pragma once
 #include "Mesh.h"
+#include "Component.h"
 #include <d3d11.h>
 
-class DrawnMesh
+class Render;
+
+class DrawnMesh : public virtual Component
 {
 public:
-	DrawnMesh(Mesh* mesh, ID3D11DeviceContext* deviceContext);
+	DrawnMesh();
+	DrawnMesh(Render* newRender, Mesh* newMesh);
 	~DrawnMesh();
 
-	void SetBuffers();
-	void DrawIndices();
-	void Draw();
-private:
-	Mesh* mesh;
-	ID3D11DeviceContext* deviceContext;
-};
+	void Draw(ID3D11DeviceContext* deviceContext);
+	void Update();
 
+	Mesh* GetMesh() { return mesh; }
+private:
+	Render* render;
+	Mesh* mesh;
+};

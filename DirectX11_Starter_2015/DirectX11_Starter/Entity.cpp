@@ -9,7 +9,7 @@ Entity::Entity()
 	for (int c = 0; c < MAX_NUM_COMPONENTS; ++c) {
 		components[c] = Component::EMPTY;//Just to be sure;
 	}
-	transform = new Transform();
+	transform = Transform();
 }
 
 
@@ -19,7 +19,7 @@ Entity::~Entity()
 		components[c].Removed();
 	}
 	delete[] components;
-	delete transform;
+	//delete transform;
 }
 
 void Entity::AddComponent(Component &newComponent)
@@ -75,6 +75,7 @@ void Entity::RemoveComponent(Component &removedComponent)
 
 void Entity::Update()
 {
+	//Still have to handle how component init is handled
 	for (int u = 0; u <= lastUpdatedComponentIndex; ++u) {
 		components[u].Update();
 	}
