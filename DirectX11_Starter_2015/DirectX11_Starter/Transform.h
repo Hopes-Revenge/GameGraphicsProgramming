@@ -5,6 +5,8 @@ class Transform
 {
 public:
 	Transform();
+	Transform(const Transform& other);
+	Transform& operator=(const Transform& other);
 	~Transform();
 
 	//Getter and setters

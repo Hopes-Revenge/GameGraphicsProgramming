@@ -264,6 +264,21 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
+
+	DirectX::XMFLOAT3 rot = entity1->GetTransform()->GetRotation();
+	float rotRate = 10.0f;
+	rot.x += rotRate * deltaTime;
+	rot.y += rotRate * deltaTime;
+	rot.z += rotRate * deltaTime;
+	entity1->GetTransform()->SetRotation(rot);
+	DirectX::XMFLOAT3 pos = entity2->GetTransform()->GetPosition();
+	pos.x += 0.2f * deltaTime;
+	entity2->GetTransform()->SetPosition(pos);
+	entity3->GetTransform()->SetParrent(entity2->GetTransform());
+
+	entity1->Update();
+	entity2->Update();
+	entity3->Update();
 }
 
 // --------------------------------------------------------
@@ -301,11 +316,7 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 	vertexShader->SetShader(true);
 	pixelShader->SetShader(true);
 
-	entity1->Update();
-	entity2->Update();
-	entity3->Update();
-
-	render->UpdateAndRender(viewMatrix, projectionMatrix);
+	render->UpdateAndRender(viewMatrix, projectionMatrix, vertexShader);
 
 
 	// Present the buffer

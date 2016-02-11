@@ -13,7 +13,7 @@ public:
 	DrawnMesh();
 	DrawnMesh(Render* newRender, Mesh* newMesh);
 	DrawnMesh(const DrawnMesh& other);
-	DrawnMesh& operator= (const DrawnMesh& other);
+	DrawnMesh & operator=(const DrawnMesh& other);
 	~DrawnMesh();
 
 	void Draw(RenderInfo renderInfo);

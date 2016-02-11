@@ -6,31 +6,20 @@ class Transform;
 class Component
 {
 public:
-	const static unsigned __int8 UNINDEXED = 255;
 	const static Component EMPTY;
 	Component();
-	Component(const Component& other);
-	Component& operator= (const Component& other);
+	Component(const Component & other);
+	Component & operator=(const Component & other);
 	~Component();
 
-	virtual void Init();//This is going to be called the before the first update of the object, still have to decide how to do this
-	virtual void Added();
-	virtual void Removed();
 	virtual void Update();
 
-	inline bool operator==(const Component& other) { return index == other.index && parrentEntity == other.parrentEntity; }
-	inline bool operator!=(const Component& other) { return !(*this == other); }
-
 	void SetEntiy(Entity* newParrentEntity);
-	void SetIndex(unsigned __int8 newIndex) { index = newIndex; }
-	Entity* const GetEntity() { return parrentEntity; }
-	unsigned __int8 GetIndex() { return index; }
+	Entity* GetEntity() { return parrentEntity; }
 	bool GetHasBeenInialized() const { return hasBeenInialized; }
 	Transform* GetTransform();
 private:
 	Entity* parrentEntity;
-	//Index is limited to [0, 254] if you want more components than that too bad
-	unsigned __int8 index;
 	bool hasBeenInialized;
 };
 
