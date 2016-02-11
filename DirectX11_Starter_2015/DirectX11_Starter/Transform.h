@@ -15,10 +15,10 @@ public:
 	DirectX::XMFLOAT3 GetPosition() { return position; }
 	DirectX::XMFLOAT3 GetRotation() { return rotation; }
 	DirectX::XMFLOAT3 GetScale() { return scale; }
-	DirectX::XMFLOAT4X4 GetWorldMatrix() { return worldMatrix; }
+	DirectX::XMFLOAT4X4 GetWorldMatrix() { return RecalculateWorldMatrix(); }
 	Transform* GetParrent() { return parrent; }
 
-	void RecalculateWorldMatrix();
+	DirectX::XMFLOAT4X4 RecalculateWorldMatrix();
 private:
 	//we save the world matrix and only recalculate it when this is true, this is set to true when we change information about the transform
 	Transform* parrent;

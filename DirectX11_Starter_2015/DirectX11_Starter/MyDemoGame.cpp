@@ -81,13 +81,15 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance)
 // --------------------------------------------------------
 MyDemoGame::~MyDemoGame()
 {
-	delete drawnMesh1;
-	delete drawnMesh2;
-	delete drawnMesh3;
+	delete entity1;
+	delete entity2;
+	delete entity3;
 
 	delete mesh1;
 	delete mesh2;
 	delete mesh3;
+
+	delete render;
 
 	// Delete our simple shaders
 	delete vertexShader;
@@ -112,6 +114,9 @@ bool MyDemoGame::Init()
 	// Helper methods to create something to draw, load shaders to draw it 
 	// with and set up matrices so we can see how to pass data to the GPU.
 	//  - For your own projects, feel free to expand/replace these.
+
+	render = new Render(deviceContext);
+
 	LoadShaders(); 
 	CreateGeometry();
 	CreateMatrices();
@@ -158,7 +163,9 @@ void MyDemoGame::CreateGeometry()
 	};
 	int indices[] = { 0, 1, 2, 0, 3, 1 };
 	mesh1 = new Mesh(vertices, 4, indices, 6, device);
-	drawnMesh1 = new DrawnMesh(mesh1, deviceContext);
+	//DrawnMesh drawnMesh1 = DrawnMesh(render, mesh1);
+	entity1 = new Entity();
+	entity1->AddComponent(new DrawnMesh(render, mesh1));
 
 	Vertex vertices2[] =
 	{
@@ -168,7 +175,8 @@ void MyDemoGame::CreateGeometry()
 	};
 	int indices2[] = { 0, 1, 2};
 	mesh2 = new Mesh(vertices2, 3, indices2, 3, device);
-	drawnMesh2 = new DrawnMesh(mesh2, deviceContext);
+	entity2 = new Entity();
+	entity2->AddComponent(new DrawnMesh(render, mesh2));
 
 	Vertex vertices3[] =
 	{
@@ -178,7 +186,8 @@ void MyDemoGame::CreateGeometry()
 	};
 	int indices3[] = { 0, 1, 2 };
 	mesh3 = new Mesh(vertices3, 3, indices3, 3, device);
-	drawnMesh3 = new DrawnMesh(mesh3, deviceContext);
+	entity3 = new Entity();
+	entity3->AddComponent(new DrawnMesh(render, mesh3));
 }
 
 
@@ -281,9 +290,9 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 	//  - This is actually a complex process of copying data to a local buffer
 	//    and then copying that entire buffer to the GPU.  
 	//  - The "SimpleShader" class handles all of that for you.
-	vertexShader->SetMatrix4x4("world", worldMatrix);
-	vertexShader->SetMatrix4x4("view", viewMatrix);
-	vertexShader->SetMatrix4x4("projection", projectionMatrix);
+	//vertexShader->SetMatrix4x4("world", worldMatrix);
+	//vertexShader->SetMatrix4x4("view", viewMatrix);
+	//vertexShader->SetMatrix4x4("projection", projectionMatrix);
 	
 	// Set the vertex and pixel shaders to use for the next Draw() command
 	//  - These don't technically need to be set every frame...YET
@@ -291,6 +300,12 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 	//    you'll need to swap the current shaders before each draw
 	vertexShader->SetShader(true);
 	pixelShader->SetShader(true);
+
+	entity1->Update();
+	entity2->Update();
+	entity3->Update();
+
+	render->UpdateAndRender(viewMatrix, projectionMatrix);
 
 
 	// Present the buffer

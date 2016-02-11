@@ -6,6 +6,8 @@
 
 #include "Mesh.h"
 #include "DrawnMesh.h"
+#include "Render.h"
+#include "Entity.h"
 
 // Include run-time memory checking in debug builds, so 
 // we can be notified of memory leaks
@@ -46,12 +48,13 @@ private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 
+	Render* render;
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
-	DrawnMesh* drawnMesh1;
-	DrawnMesh* drawnMesh2;
-	DrawnMesh* drawnMesh3;
+	Entity* entity1;
+	Entity* entity2;
+	Entity* entity3;
 
 	// Wrappers for DirectX shaders to provide simplified functionality
 	SimpleVertexShader* vertexShader;

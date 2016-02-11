@@ -5,9 +5,10 @@ Transform::Transform()
 {
 	isDirty = true;
 	parrent = nullptr;
-	position = DirectX::XMFLOAT3();
-	rotation = DirectX::XMFLOAT3();
+	position = DirectX::XMFLOAT3(0, 0, 0);
+	rotation = DirectX::XMFLOAT3(0, 0, 0);
 	scale = DirectX::XMFLOAT3(1, 1, 1);
+	RecalculateWorldMatrix();
 }
 
 
@@ -39,9 +40,9 @@ void Transform::SetParrent(Transform * newParrent)
 	parrent = newParrent;
 }
 
-void Transform::RecalculateWorldMatrix()
+DirectX::XMFLOAT4X4 Transform::RecalculateWorldMatrix()
 {
-	if (!isDirty) return;//Dont know if I want to keep it.
+	if (!isDirty) return worldMatrix;//Dont know if I want to keep it.
 	isDirty = false;
 	//Okay I would like to change this to try to get rid of the if statement
 	if (parrent == nullptr) {
@@ -58,4 +59,5 @@ void Transform::RecalculateWorldMatrix()
 		DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(
 			DirectX::XMMatrixMultiply(calculatedWorldMatrix, DirectX::XMLoadFloat4x4(&parrent->GetWorldMatrix()))));
 	}
+	return worldMatrix;
 }

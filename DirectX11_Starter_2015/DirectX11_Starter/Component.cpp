@@ -7,7 +7,23 @@ Component::Component()
 {
 	parrentEntity = nullptr;
 	index = UNINDEXED;
-	hasBeenInialized = hasBeenInialized;
+	hasBeenInialized = false;
+}
+
+Component::Component(const Component & other)
+{
+	parrentEntity = other.parrentEntity;
+	index = other.index;
+	hasBeenInialized = other.hasBeenInialized;
+}
+
+Component & Component::operator=(const Component & other)
+{
+	if (this == &other) return *this;
+	parrentEntity = other.parrentEntity;
+	index = other.index;
+	hasBeenInialized = other.hasBeenInialized;
+	return *this;
 }
 
 
@@ -33,9 +49,13 @@ void Component::Update()
 {
 }
 
-void Component::SetEntiy(Entity * newParrentEntity)
+void Component::SetEntiy(Entity* newParrentEntity)
 {
 	//Only allowed to set the parrent entity once, this may change in the future.
 	if (parrentEntity != nullptr) return;
 	parrentEntity = newParrentEntity;
+}
+
+Transform* Component::GetTransform() {
+	return parrentEntity->GetTransform();
 }

@@ -1,14 +1,2 @@
 ﻿  MyDemoGame.cpp
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(161): error C2664: 'DrawnMesh::DrawnMesh(const DrawnMesh &)': cannot convert argument 1 from 'Mesh *' to 'Render *'
-  d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(161): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(171): error C2664: 'DrawnMesh::DrawnMesh(const DrawnMesh &)': cannot convert argument 1 from 'Mesh *' to 'Render *'
-  d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(171): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(181): error C2664: 'DrawnMesh::DrawnMesh(const DrawnMesh &)': cannot convert argument 1 from 'Mesh *' to 'Render *'
-  d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(181): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-  Entity.cpp
-  DrawnMesh.cpp
-  Component.cpp
-  Generating Code...
-  Compiling...
-  Render.cpp
-  Generating Code...
+  DirectX11_Starter.vcxproj -> D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\DirectX11_Starter.exe

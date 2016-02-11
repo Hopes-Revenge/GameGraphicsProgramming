@@ -1,11 +1,16 @@
 #pragma once
 #include "Transform.h"
 #include "DrawnMesh.h"
+#include "SimpleShader.h"
 #include <d3d11.h>
 
 struct RenderInfo {
 	ID3D11DeviceContext* deviceContext;
+	DirectX::XMFLOAT4X4 viewMatrix;
+	DirectX::XMFLOAT4X4 projectionMatrix;
 
+	//Temp stuff till materials are in
+	SimpleVertexShader* vertexShader;
 };
 
 class Render
@@ -16,12 +21,11 @@ public:
 	Render(ID3D11DeviceContext* newDeviceContext);
 	~Render();
 
-	void AddToRenderQueue(DrawnMesh& drawnMesh);
-	void UpdateAndRender();
+	void AddToRenderList(DrawnMesh& drawnMesh);
+	void UpdateAndRender(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projectionMatrix);//These are probably not going to be passed in latter
 private:
 	ID3D11DeviceContext* deviceContext;
-	DrawnMesh* renderQueue = new DrawnMesh[MAX_NUM_OF_RENDERED_OBJECTS];
-	int startIndex;
+	DrawnMesh* renderList = new DrawnMesh[MAX_NUM_OF_RENDERED_OBJECTS];
 	int endIndex;
 };
 

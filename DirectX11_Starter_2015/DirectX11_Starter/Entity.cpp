@@ -4,37 +4,47 @@
 
 Entity::Entity()
 {
-	numComponents = 0;
-	lastUpdatedComponentIndex = -1;
-	for (int c = 0; c < MAX_NUM_COMPONENTS; ++c) {
+//	components = new Component[MAX_NUM_COMPONENTS];
+	//numComponents = 0;
+//	lastUpdatedComponentIndex = -1;
+	/*for (int c = 0; c < MAX_NUM_COMPONENTS; ++c) {
 		components[c] = Component::EMPTY;//Just to be sure;
-	}
-	transform = Transform();
+	}*/
+	transform = new Transform();
 }
 
 
 Entity::~Entity()
 {
-	for (int c = 0; c < MAX_NUM_COMPONENTS; ++c) {
+	/*for (int c = 0; c < MAX_NUM_COMPONENTS; ++c) {
 		components[c].Removed();
+	}*/
+	//delete[] components;
+	for (int c = 0; c < components.size(); ++c) {
+		if (components[c] != nullptr) {
+			components[c]->Removed();
+			delete components[c];
+		}
 	}
-	delete[] components;
-	//delete transform;
+	delete transform;
 }
 
-void Entity::AddComponent(Component &newComponent)
+void Entity::AddComponent(Component* newComponent)
 {
 	//Right now we always add the component to be updated, this will change in the future
 
 	//if (newComponent == nullptr) return;
 	//If we are at max capacity return
-	if (numComponents + 1 >= MAX_NUM_COMPONENTS) return;
+	//if (numComponents + 1 >= MAX_NUM_COMPONENTS) return;
 	//If the component already has an entity we don't want to add it, it already has an owner
-	if (newComponent.GetEntity() == nullptr) {
-		newComponent.SetEntiy(this);
+	if (newComponent->GetEntity() == nullptr) {
+		newComponent->SetEntiy(this);
+		components.push_back(newComponent);
 		//All the components are active so we just add this one to the end
-		if (numComponents == lastUpdatedComponentIndex + 1) {
-			SetComponentIndex(numComponents, newComponent);
+		/*if (numComponents == lastUpdatedComponentIndex + 1) {
+			//SetComponentIndex(numComponents, newComponent);
+			components[numComponents] = newComponent;
+			components[numComponents].SetIndex(numComponents);
 			lastUpdatedComponentIndex = numComponents;
 		} else {
 			//So we have this component equal the last active plus one and set the old active plus one equal to the numcomponents slot
@@ -42,9 +52,9 @@ void Entity::AddComponent(Component &newComponent)
 			Component temp = components[lastUpdatedComponentIndex];//Okay I am doing swapping slow here, this might get changed in the future
 			SetComponentIndex(lastUpdatedComponentIndex, newComponent);
 			SetComponentIndex(numComponents, temp);
-		}
-		newComponent.Added();
-		numComponents += 1;
+		}*/
+		newComponent->Added();
+//		numComponents += 1;
 	}
 
 	//Note: don't know if I want to do asserts.
@@ -52,7 +62,7 @@ void Entity::AddComponent(Component &newComponent)
 	//static_assert(newComponent, "Trying to add a class that is not a component.");
 }
 
-void Entity::RemoveComponent(Component &removedComponent)
+/*void Entity::RemoveComponent(Component &removedComponent)
 {
 	//This component is unindexed we, dont care about it then. If the components entity doesn't match this one we dont care about it either
 	if (removedComponent.GetIndex() == Component::UNINDEXED || removedComponent.GetEntity() != this) return;
@@ -69,14 +79,12 @@ void Entity::RemoveComponent(Component &removedComponent)
 		components[numComponents - 1] = Component::EMPTY;//We use the "Unsafe version" here
 	}
 	numComponents -= 1;
-}
-
-
+}*/
 
 void Entity::Update()
 {
 	//Still have to handle how component init is handled
-	for (int u = 0; u <= lastUpdatedComponentIndex; ++u) {
-		components[u].Update();
+	for (int u = 0; u < components.size(); ++u) {
+		components[u]->Update();
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 class Entity;
+class Transform;
 
 class Component
 {
@@ -8,6 +9,8 @@ public:
 	const static unsigned __int8 UNINDEXED = 255;
 	const static Component EMPTY;
 	Component();
+	Component(const Component& other);
+	Component& operator= (const Component& other);
 	~Component();
 
 	virtual void Init();//This is going to be called the before the first update of the object, still have to decide how to do this
@@ -20,9 +23,10 @@ public:
 
 	void SetEntiy(Entity* newParrentEntity);
 	void SetIndex(unsigned __int8 newIndex) { index = newIndex; }
-	Entity* GetEntity() { return parrentEntity; }
+	Entity* const GetEntity() { return parrentEntity; }
 	unsigned __int8 GetIndex() { return index; }
 	bool GetHasBeenInialized() const { return hasBeenInialized; }
+	Transform* GetTransform();
 private:
 	Entity* parrentEntity;
 	//Index is limited to [0, 254] if you want more components than that too bad
