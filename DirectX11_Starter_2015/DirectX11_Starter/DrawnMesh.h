@@ -12,12 +12,10 @@ class DrawnMesh : public Component
 public:
 	DrawnMesh();
 	DrawnMesh(Render* newRender, Mesh* newMesh);
-	DrawnMesh(const DrawnMesh& other);
-	DrawnMesh & operator=(const DrawnMesh& other);
 	~DrawnMesh();
 
 	void Draw(RenderInfo renderInfo);
-	void Update();
+	void Update() override;
 
 	Mesh* GetMesh() { return mesh; }
 private:

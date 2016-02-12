@@ -1,2 +1,13 @@
 ﻿  Transform.cpp
+d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\transform.cpp(73): warning C4138: '*/' found outside of comment
+  Render.cpp
+  MyDemoGame.cpp
+d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\entity.h(17): warning C4227: anachronism used: qualifiers on reference are ignored
+  Entity.cpp
+d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\entity.h(17): warning C4227: anachronism used: qualifiers on reference are ignored
+  DrawnMesh.cpp
+d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\entity.h(17): warning C4227: anachronism used: qualifiers on reference are ignored
+  Component.cpp
+d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\entity.h(17): warning C4227: anachronism used: qualifiers on reference are ignored
+  Generating Code...
   DirectX11_Starter.vcxproj -> D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\DirectX11_Starter.exe

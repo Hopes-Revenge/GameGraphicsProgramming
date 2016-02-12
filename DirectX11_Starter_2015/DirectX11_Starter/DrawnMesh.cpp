@@ -16,22 +16,6 @@ DrawnMesh::DrawnMesh(Render* newRender, Mesh* newMesh)
 	mesh = newMesh;
 }
 
-DrawnMesh::DrawnMesh(const DrawnMesh& other)
-{
-	Component::Component(other);
-	render = other.render;
-	mesh = other.mesh;
-}
-
-DrawnMesh & DrawnMesh::operator=(const DrawnMesh& other)
-{
-	Component::operator=(other);
-	if (this == &other) return *this;
-	render = other.render;
-	mesh = other.mesh;
-	return *this;
-}
-
 DrawnMesh::~DrawnMesh()
 {
 	//Don't delete the mesh, the mesh will handle itself
@@ -45,11 +29,8 @@ void DrawnMesh::Draw(RenderInfo renderInfo)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	Transform* t = GetTransform();
+	renderInfo.vertexShader->SetMatrix4x4("world", GetTransform().GetWorldMatrix());
 
-	renderInfo.vertexShader->SetMatrix4x4("world", GetTransform()->GetWorldMatrix());
-	renderInfo.vertexShader->SetMatrix4x4("view", renderInfo.viewMatrix);
-	renderInfo.vertexShader->SetMatrix4x4("projection", renderInfo.projectionMatrix);
 	renderInfo.vertexShader->CopyAllBufferData();
 
 	renderInfo.deviceContext->IASetVertexBuffers(0, 1, mesh->GetVertexBuffer(), &stride, &offset);

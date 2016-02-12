@@ -9,16 +9,15 @@ class Entity
 public:
 	const static int MAX_NUM_COMPONENTS = 5;
 	Entity();
-	Entity(const Entity & other);
-	Entity& operator=(const Entity& other);
 	~Entity();
 
 	void AddComponent(Component* newComponent);
 	void Update();
 
-	Transform* const GetTransform() { return transform; }
+	Transform& const GetTransform() { return transform; }
 private:
-	Transform* transform;
-	std::vector<Component*> components;
+	Transform transform;
+	Component* components[MAX_NUM_COMPONENTS];
+	int numberOfComponents;
 };
 

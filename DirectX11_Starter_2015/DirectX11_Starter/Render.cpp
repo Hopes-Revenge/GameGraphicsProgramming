@@ -31,6 +31,9 @@ void Render::UpdateAndRender(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4
 	renderInfo.viewMatrix = viewMatrix;
 	renderInfo.projectionMatrix = projectionMatrix;
 	renderInfo.vertexShader = vertShader;
+
+	vertShader->SetMatrix4x4("view", renderInfo.viewMatrix);
+	vertShader->SetMatrix4x4("projection", renderInfo.projectionMatrix);
 	for (int r = 0; r < endIndex; r++) {
 		renderList[r]->Draw(renderInfo);
 	}

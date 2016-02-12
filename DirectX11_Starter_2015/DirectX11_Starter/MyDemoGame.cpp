@@ -265,16 +265,16 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
 
-	DirectX::XMFLOAT3 rot = entity1->GetTransform()->GetRotation();
+	DirectX::XMFLOAT3 rot = entity1->GetTransform().GetRotation();
 	float rotRate = 10.0f;
 	rot.x += rotRate * deltaTime;
 	rot.y += rotRate * deltaTime;
 	rot.z += rotRate * deltaTime;
-	entity1->GetTransform()->SetRotation(rot);
-	DirectX::XMFLOAT3 pos = entity2->GetTransform()->GetPosition();
+	entity1->GetTransform().SetRotation(rot);
+	DirectX::XMFLOAT3 pos = entity2->GetTransform().GetPosition();
 	pos.x += 0.2f * deltaTime;
-	entity2->GetTransform()->SetPosition(pos);
-	entity3->GetTransform()->SetParrent(entity2->GetTransform());
+	entity2->GetTransform().SetPosition(pos);
+	entity3->GetTransform().SetParrent(&entity2->GetTransform());
 
 	entity1->Update();
 	entity2->Update();

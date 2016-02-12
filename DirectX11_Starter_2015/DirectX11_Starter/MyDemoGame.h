@@ -4,6 +4,7 @@
 #include "DirectXGameCore.h"
 #include "SimpleShader.h"
 
+#include "Transform.h"
 #include "Mesh.h"
 #include "DrawnMesh.h"
 #include "Render.h"
