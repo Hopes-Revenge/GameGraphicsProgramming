@@ -24,6 +24,9 @@
 #include "MyDemoGame.h"
 #include "Vertex.h"
 
+
+#include <iostream>
+
 // For the DirectX Math library
 using namespace DirectX;
 
@@ -89,11 +92,14 @@ MyDemoGame::~MyDemoGame()
 	delete mesh2;
 	delete mesh3;
 
+
 	delete render;
 
 	// Delete our simple shaders
 	delete vertexShader;
 	delete pixelShader;
+
+	delete basicMaterial;
 }
 
 #pragma endregion
@@ -119,11 +125,13 @@ bool MyDemoGame::Init()
 
 	LoadShaders(); 
 	CreateGeometry();
-	CreateMatrices();
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives we'll be using and how to interpret them
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+	camera = Camera(0.0f, 0.0f, -5.0f);
 
 	// Successfully initialized
 	return true;
@@ -142,6 +150,8 @@ void MyDemoGame::LoadShaders()
 
 	pixelShader = new SimplePixelShader(device, deviceContext);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
+
+	basicMaterial = new Material(vertexShader, pixelShader);
 }
 
 
@@ -152,6 +162,7 @@ void MyDemoGame::CreateGeometry()
 {
 	XMFLOAT4 red	= XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	XMFLOAT4 green	= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMFLOAT4 magenta = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
 	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	Vertex vertices[] =
@@ -165,18 +176,21 @@ void MyDemoGame::CreateGeometry()
 	mesh1 = new Mesh(vertices, 4, indices, 6, device);
 	//DrawnMesh drawnMesh1 = DrawnMesh(render, mesh1);
 	entity1 = new Entity();
-	entity1->AddComponent(new DrawnMesh(render, mesh1));
+	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
 
+	float halfSize = 100 * 0.5f;
+	float yPos = -1;
 	Vertex vertices2[] =
 	{
-		{ XMFLOAT3(-1.5f, +1.0f, +0.0f), red },// 0
-		{ XMFLOAT3(+1.5f, -1.0f, +0.0f), red },// 1
-		{ XMFLOAT3(-1.5f, -1.0f, +0.0f), red },// 2
+		{ XMFLOAT3(-halfSize, +yPos, +halfSize), magenta },// 0
+		{ XMFLOAT3(+halfSize, +yPos, -halfSize), magenta },// 1
+		{ XMFLOAT3(-halfSize, +yPos, -halfSize), magenta },// 2
+		{ XMFLOAT3(+halfSize, +yPos, +halfSize), magenta },// 3
 	};
-	int indices2[] = { 0, 1, 2};
-	mesh2 = new Mesh(vertices2, 3, indices2, 3, device);
+	int indices2[] = { 0, 1, 2, 0, 3, 1 };
+	mesh2 = new Mesh(vertices2, 4, indices2, 6, device);
 	entity2 = new Entity();
-	entity2->AddComponent(new DrawnMesh(render, mesh2));
+	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
 
 	Vertex vertices3[] =
 	{
@@ -187,47 +201,7 @@ void MyDemoGame::CreateGeometry()
 	int indices3[] = { 0, 1, 2 };
 	mesh3 = new Mesh(vertices3, 3, indices3, 3, device);
 	entity3 = new Entity();
-	entity3->AddComponent(new DrawnMesh(render, mesh3));
-}
-
-
-// --------------------------------------------------------
-// Initializes the matrices necessary to represent our geometry's 
-// transformations and our 3D camera
-// --------------------------------------------------------
-void MyDemoGame::CreateMatrices()
-{
-	// Set up world matrix
-	// - In an actual game, each object will need one of these and they should
-	//   update when/if the object moves (every frame)
-	XMMATRIX W = XMMatrixIdentity();
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W)); // Transpose for HLSL!
-    
-	// Create the View matrix
-	// - In an actual game, recreate this matrix when the camera 
-	//    moves (potentially every frame)
-	// - We're using the LOOK TO function, which takes the position of the
-	//    camera and the direction you want it to look (as well as "up")
-	// - Another option is the LOOK AT function, to look towards a specific
-	//    point in 3D space
-	XMVECTOR pos = XMVectorSet(0, 0, -5, 0);
-	XMVECTOR dir = XMVectorSet(0, 0, 1, 0);
-	XMVECTOR up  = XMVectorSet(0, 1, 0, 0);
-	XMMATRIX V   = XMMatrixLookToLH(
-		pos,     // The position of the "camera"
-		dir,     // Direction the camera is looking
-		up);     // "Up" direction in 3D space (prevents roll)
-	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V)); // Transpose for HLSL!
-
-	// Create the Projection matrix
-	// - This should match the window's aspect ratio, and also update anytime
-	//   the window resizes (which is already happening in OnResize() below)
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.25f * 3.1415926535f,		// Field of View Angle
-		aspectRatio,				// Aspect ratio
-		0.1f,						// Near clip plane distance
-		100.0f);					// Far clip plane distance
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
+	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial));
 }
 
 #pragma endregion
@@ -244,12 +218,7 @@ void MyDemoGame::OnResize()
 	DirectXGameCore::OnResize();
 
 	// Update our projection matrix since the window size changed
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.25f * 3.1415926535f,	// Field of View Angle
-		aspectRatio,		  	// Aspect ratio
-		0.1f,				  	// Near clip plane distance
-		100.0f);			  	// Far clip plane distance
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
+	camera.CreatePerspectiveProjectionMatrix(aspectRatio, 0.1f, 100.0f);
 }
 #pragma endregion
 
@@ -273,12 +242,17 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	entity1->GetTransform().SetRotation(rot);
 	DirectX::XMFLOAT3 pos = entity2->GetTransform().GetPosition();
 	pos.x += 0.2f * deltaTime;
-	entity2->GetTransform().SetPosition(pos);
+	//entity2->GetTransform().SetPosition(pos);
 	entity3->GetTransform().SetParrent(&entity2->GetTransform());
 
 	entity1->Update();
 	entity2->Update();
 	entity3->Update();
+	LONG deltaMouseX = curMousePos.x - prevMousePos.x;
+	LONG deltaMouseY = curMousePos.y - prevMousePos.y;
+	camera.Update(deltaTime, deltaMouseX, deltaMouseY);
+	prevMousePos.x = curMousePos.x;
+	prevMousePos.y = curMousePos.y;
 }
 
 // --------------------------------------------------------
@@ -316,7 +290,7 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 	vertexShader->SetShader(true);
 	pixelShader->SetShader(true);
 
-	render->UpdateAndRender(viewMatrix, projectionMatrix, vertexShader);
+	render->UpdateAndRender(camera.GetViewMatrix(), camera.GetProjectionMatrix());
 
 
 	// Present the buffer
@@ -339,9 +313,13 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 // --------------------------------------------------------
 void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 {
+	if (prevMousePos.x == 0 && prevMousePos.y == 0) {
+		prevMousePos.x = curMousePos.x;
+		prevMousePos.y = curMousePos.y;
+	}
 	// Save the previous mouse position, so we have it for the future
-	prevMousePos.x = x;
-	prevMousePos.y = y;
+	curMousePos.x = x;
+	curMousePos.y = y;
 
 	// Caputure the mouse so we keep getting mouse move
 	// events even if the mouse leaves the window.  we'll be
@@ -370,8 +348,12 @@ void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)
 // --------------------------------------------------------
 void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 {
+	if (prevMousePos.x == 0 && prevMousePos.y == 0) {
+		prevMousePos.x = curMousePos.x;
+		prevMousePos.y = curMousePos.y;
+	}
 	// Save the previous mouse position, so we have it for the future
-	prevMousePos.x = x;
-	prevMousePos.y = y;
+	curMousePos.x = x;
+	curMousePos.y = y;
 }
 #pragma endregion

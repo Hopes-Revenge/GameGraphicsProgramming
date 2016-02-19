@@ -24,16 +24,15 @@ void Render::AddToRenderList(DrawnMesh& drawnMesh)
 	endIndex += 1;
 }
 
-void Render::UpdateAndRender(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projectionMatrix, SimpleVertexShader* vertShader)
+void Render::UpdateAndRender(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projectionMatrix)
 {
 	RenderInfo renderInfo = RenderInfo();
 	renderInfo.deviceContext = deviceContext;
 	renderInfo.viewMatrix = viewMatrix;
 	renderInfo.projectionMatrix = projectionMatrix;
-	renderInfo.vertexShader = vertShader;
 
-	vertShader->SetMatrix4x4("view", renderInfo.viewMatrix);
-	vertShader->SetMatrix4x4("projection", renderInfo.projectionMatrix);
+	//vertShader->SetMatrix4x4("view", renderInfo.viewMatrix);
+	//vertShader->SetMatrix4x4("projection", renderInfo.projectionMatrix);
 	for (int r = 0; r < endIndex; r++) {
 		renderList[r]->Draw(renderInfo);
 	}

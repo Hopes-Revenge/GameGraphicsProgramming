@@ -9,11 +9,12 @@ DrawnMesh::DrawnMesh()
 	mesh = nullptr;
 }
 
-DrawnMesh::DrawnMesh(Render* newRender, Mesh* newMesh)
+DrawnMesh::DrawnMesh(Render* newRender, Mesh* newMesh, Material* newMaterial)
 {
 	Component::Component();
 	render = newRender;
 	mesh = newMesh;
+	material = newMaterial;
 }
 
 DrawnMesh::~DrawnMesh()
@@ -29,9 +30,11 @@ void DrawnMesh::Draw(RenderInfo renderInfo)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	renderInfo.vertexShader->SetMatrix4x4("world", GetTransform().GetWorldMatrix());
+	//renderInfo.vertexShader->SetMatrix4x4("world", GetTransform().GetWorldMatrix());
 
-	renderInfo.vertexShader->CopyAllBufferData();
+	//renderInfo.vertexShader->CopyAllBufferData();
+
+	material->PrepareMaterial(renderInfo, GetTransform());
 
 	renderInfo.deviceContext->IASetVertexBuffers(0, 1, mesh->GetVertexBuffer(), &stride, &offset);
 	renderInfo.deviceContext->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);

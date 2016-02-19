@@ -11,12 +11,15 @@ public:
 
 	//Getter and setters
 	void SetPosition(DirectX::XMFLOAT3 newPos);
+	void MoveRelative(float addX, float addY, float addZ);
 	void SetRotation(DirectX::XMFLOAT3 newRot);
 	void SetScale(DirectX::XMFLOAT3 newScale);
 	void SetParrent(Transform* newParrent);
+	bool GetIsDirty() { return isDirty; }
 	DirectX::XMFLOAT3 GetPosition() { return position; }
 	DirectX::XMFLOAT3 GetRotation() { return rotation; }
 	DirectX::XMFLOAT3 GetScale() { return scale; }
+	DirectX::XMFLOAT3 GetForwardVector();
 	DirectX::XMFLOAT4X4 GetWorldMatrix() { return RecalculateWorldMatrix(); }
 	Transform* GetParrent() { return parrent; }
 

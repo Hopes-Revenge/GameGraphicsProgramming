@@ -44,6 +44,14 @@ void Transform::SetPosition(DirectX::XMFLOAT3 newPos)
 	position = newPos;
 }
 
+void Transform::MoveRelative(float addX, float addY, float addZ)
+{
+	isDirty = true;
+	DirectX::XMVECTOR dir = DirectX::XMVector3Rotate(DirectX::XMVectorSet(addX, addY, addZ, 0.0f),
+		DirectX::XMQuaternionRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&rotation)));
+	DirectX::XMStoreFloat3(&position, DirectX::XMVectorAdd(dir, DirectX::XMLoadFloat3(&position)));
+}
+
 void Transform::SetRotation(DirectX::XMFLOAT3 newRot)
 {
 	isDirty = true;
@@ -62,6 +70,14 @@ void Transform::SetParrent(Transform * newParrent)
 	parrent = newParrent;
 }
 
+DirectX::XMFLOAT3 Transform::GetForwardVector()
+{
+	DirectX::XMVECTOR forward = DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), DirectX::XMQuaternionRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&rotation)));
+	DirectX::XMFLOAT3 realForward;
+	DirectX::XMStoreFloat3(&realForward, forward);
+	return realForward;
+}
+
 DirectX::XMFLOAT4X4 Transform::RecalculateWorldMatrix()
 {
 	//Okay I would like to change this to try to get rid of the if statement
@@ -70,14 +86,14 @@ DirectX::XMFLOAT4X4 Transform::RecalculateWorldMatrix()
 		if (!isDirty) return worldMatrix;
 		DirectX::XMMATRIX  calculatedWorldMatrix =
 			DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&scale)) *
-			DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&rotation)) *//GIMBAL LOCK
+			DirectX::XMMatrixRotationX(rotation.x) * DirectX::XMMatrixRotationY(rotation.y) * DirectX::XMMatrixRotationZ(rotation.z) *
 			DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&position));
 		DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(calculatedWorldMatrix));
 	} else {
 		//if (!isDirty || !parrent->isDirty) return worldMatrix;//Dont know if I want to keep it.
 		DirectX::XMMATRIX  calculatedWorldMatrix =
 			DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&scale)) *
-			DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&rotation)) *
+			DirectX::XMMatrixRotationX(rotation.x) * DirectX::XMMatrixRotationY(rotation.y) * DirectX::XMMatrixRotationZ(rotation.z) *
 			DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&position));
 		DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(
 			DirectX::XMMatrixMultiply(DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&parrent->GetWorldMatrix())), calculatedWorldMatrix)));

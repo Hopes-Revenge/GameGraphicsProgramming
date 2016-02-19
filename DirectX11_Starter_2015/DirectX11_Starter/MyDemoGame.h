@@ -9,6 +9,8 @@
 #include "DrawnMesh.h"
 #include "Render.h"
 #include "Entity.h"
+#include "Camera.h"
+#include "Material.h"
 
 // Include run-time memory checking in debug builds, so 
 // we can be notified of memory leaks
@@ -43,13 +45,14 @@ private:
 	// start doing something more advanced!
 	void LoadShaders(); 
 	void CreateGeometry();
-	void CreateMatrices();
 
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 
+	Camera camera;
 	Render* render;
+	Material* basicMaterial;
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
@@ -62,11 +65,10 @@ private:
 	SimplePixelShader* pixelShader;
 
 	// The matrices to go from model space to screen space
-	DirectX::XMFLOAT4X4 worldMatrix;
-	DirectX::XMFLOAT4X4 viewMatrix;
-	DirectX::XMFLOAT4X4 projectionMatrix;
+	//DirectX::XMFLOAT4X4 worldMatrix;
 
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
+	POINT curMousePos;
 };

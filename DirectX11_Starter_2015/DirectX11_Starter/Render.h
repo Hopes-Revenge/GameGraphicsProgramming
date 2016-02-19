@@ -8,9 +8,6 @@ struct RenderInfo {
 	ID3D11DeviceContext* deviceContext;
 	DirectX::XMFLOAT4X4 viewMatrix;
 	DirectX::XMFLOAT4X4 projectionMatrix;
-
-	//Temp stuff till materials are in
-	SimpleVertexShader* vertexShader;
 };
 
 class Render
@@ -22,7 +19,7 @@ public:
 	~Render();
 
 	void AddToRenderList(DrawnMesh& drawnMesh);
-	void UpdateAndRender(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projectionMatrix, SimpleVertexShader* vertShader);//These are probably not going to be passed in latter
+	void UpdateAndRender(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projectionMatrix);//These are probably not going to be passed in latter
 private:
 	ID3D11DeviceContext* deviceContext;
 	DrawnMesh* renderList[MAX_NUM_OF_RENDERED_OBJECTS];
