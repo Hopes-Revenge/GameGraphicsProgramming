@@ -132,6 +132,10 @@ bool MyDemoGame::Init()
 
 
 	camera = Camera(0.0f, 0.0f, -5.0f);
+	camera.CreatePerspectiveProjectionMatrix(aspectRatio, 0.1f, 100.0f);
+
+	light1 = GameLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
+	light1.GetTransform().SetRotation(XMFLOAT3(1, -1, 0));
 
 	// Successfully initialized
 	return true;
@@ -160,20 +164,18 @@ void MyDemoGame::LoadShaders()
 // --------------------------------------------------------
 void MyDemoGame::CreateGeometry()
 {
-	XMFLOAT4 red	= XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green	= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 magenta = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
-	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	XMFLOAT3 normal	= XMFLOAT3(0,1, 0);
+	XMFLOAT2 uv = XMFLOAT2(0, 0);
 
 	Vertex vertices[] =
 	{
-		{ XMFLOAT3(-0.5f, +1.0f, +0.0f), red },// 0
-		{ XMFLOAT3(+0.5f, -1.0f, +0.0f), blue },// 1
-		{ XMFLOAT3(-0.5f, -1.0f, +0.0f), green },// 2
-		{ XMFLOAT3(+0.5f, +1.0f, 0.0f), green },// 3
+		{ XMFLOAT3(-0.5f, +1.0f, +0.0f), normal, uv },// 0
+		{ XMFLOAT3(+0.5f, -1.0f, +0.0f), normal, uv },// 1
+		{ XMFLOAT3(-0.5f, -1.0f, +0.0f), normal, uv },// 2
+		{ XMFLOAT3(+0.5f, +1.0f, 0.0f), normal, uv },// 3
 	};
-	int indices[] = { 0, 1, 2, 0, 3, 1 };
-	mesh1 = new Mesh(vertices, 4, indices, 6, device);
+	UINT indices[] = { 0, 1, 2, 0, 3, 1 };
+	mesh1 = new Mesh("OBJS/helix.obj", device);
 	//DrawnMesh drawnMesh1 = DrawnMesh(render, mesh1);
 	entity1 = new Entity();
 	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
@@ -182,24 +184,25 @@ void MyDemoGame::CreateGeometry()
 	float yPos = -1;
 	Vertex vertices2[] =
 	{
-		{ XMFLOAT3(-halfSize, +yPos, +halfSize), magenta },// 0
-		{ XMFLOAT3(+halfSize, +yPos, -halfSize), magenta },// 1
-		{ XMFLOAT3(-halfSize, +yPos, -halfSize), magenta },// 2
-		{ XMFLOAT3(+halfSize, +yPos, +halfSize), magenta },// 3
+		{ XMFLOAT3(-halfSize, +yPos, +halfSize), normal, uv },// 0
+		{ XMFLOAT3(+halfSize, +yPos, -halfSize), normal, uv },// 1
+		{ XMFLOAT3(-halfSize, +yPos, -halfSize), normal, uv },// 2
+		{ XMFLOAT3(+halfSize, +yPos, +halfSize), normal, uv },// 3
 	};
-	int indices2[] = { 0, 1, 2, 0, 3, 1 };
+	UINT indices2[] = { 0, 1, 2, 0, 3, 1 };
 	mesh2 = new Mesh(vertices2, 4, indices2, 6, device);
 	entity2 = new Entity();
 	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
 
+	normal = XMFLOAT3(0, 0, -1);
 	Vertex vertices3[] =
 	{
-		{ XMFLOAT3(-1.5f, +1.0f, +0.0f), blue },// 0
-		{ XMFLOAT3(+1.5f, +1.0f, 0.0f), blue },// 1
-		{ XMFLOAT3(+1.5f, -1.0f, +0.0f), blue },// 2
+		{ XMFLOAT3(-1.5f, +1.0f, +0.0f), normal, uv },// 0
+		{ XMFLOAT3(+1.5f, +1.0f, 0.0f), normal, uv },// 1
+		{ XMFLOAT3(+1.5f, -1.0f, +0.0f), normal, uv },// 2
 	};
-	int indices3[] = { 0, 1, 2 };
-	mesh3 = new Mesh(vertices3, 3, indices3, 3, device);
+	UINT indices3[] = { 0, 1, 2 };
+	mesh3 = new Mesh("OBJS/sphere.obj", device);//vertices3, 3, indices3, 3
 	entity3 = new Entity();
 	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial));
 }
@@ -235,7 +238,7 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 		Quit();
 
 	DirectX::XMFLOAT3 rot = entity1->GetTransform().GetRotation();
-	float rotRate = 10.0f;
+	float rotRate = 3.0f;
 	rot.x += rotRate * deltaTime;
 	rot.y += rotRate * deltaTime;
 	rot.z += rotRate * deltaTime;
@@ -245,8 +248,14 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	//entity2->GetTransform().SetPosition(pos);
 	entity3->GetTransform().SetParrent(&entity2->GetTransform());
 
+	pixelShader->SetFloat3("cameraPosition", camera.GetTransform().GetPosition());
+	pixelShader->SetData("light", &light1, sizeof(RenderLight));
 	entity1->Update();
+	pixelShader->SetFloat3("cameraPosition", camera.GetTransform().GetPosition());
+	pixelShader->SetData("light", &light1, sizeof(RenderLight));
 	entity2->Update();
+	pixelShader->SetFloat3("cameraPosition", camera.GetTransform().GetPosition());
+	pixelShader->SetData("light", &light1, sizeof(RenderLight));
 	entity3->Update();
 	LONG deltaMouseX = curMousePos.x - prevMousePos.x;
 	LONG deltaMouseY = curMousePos.y - prevMousePos.y;
@@ -287,8 +296,8 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 	//  - These don't technically need to be set every frame...YET
 	//  - Once you start applying different shaders to different objects,
 	//    you'll need to swap the current shaders before each draw
-	vertexShader->SetShader(true);
-	pixelShader->SetShader(true);
+	//vertexShader->SetShader(true);
+	//pixelShader->SetShader(true);
 
 	render->UpdateAndRender(camera.GetViewMatrix(), camera.GetProjectionMatrix());
 

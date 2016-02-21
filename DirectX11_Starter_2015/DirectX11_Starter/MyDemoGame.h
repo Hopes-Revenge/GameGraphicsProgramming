@@ -11,6 +11,7 @@
 #include "Entity.h"
 #include "Camera.h"
 #include "Material.h"
+#include "Light.h"
 
 // Include run-time memory checking in debug builds, so 
 // we can be notified of memory leaks
@@ -53,6 +54,7 @@ private:
 	Camera camera;
 	Render* render;
 	Material* basicMaterial;
+	GameLight light1;
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;

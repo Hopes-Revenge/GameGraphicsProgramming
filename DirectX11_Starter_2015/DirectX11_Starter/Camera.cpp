@@ -1,5 +1,5 @@
 #include "Camera.h"
-
+#include "Logger.h"
 
 Camera::Camera()
 {
@@ -37,11 +37,11 @@ void Camera::Update(float dt, LONG x, LONG y)
 	transform.MoveRelative(xAxisMovement, 0.0f, zAxisMovement);
 	newRot.x += y * rotateSpeed * dt;
 	newRot.y += x * rotateSpeed * dt;
-	if (newRot.x <= -15) {
-		newRot.x = -15;
+	if (newRot.x <= -1) {
+		newRot.x = -1;
 	}
-	else if (newRot.x >= 85) {
-		newRot.x = 85;
+	else if (newRot.x >= 1) {
+		newRot.x = 1;
 	}
 	transform.SetRotation(newRot);
 

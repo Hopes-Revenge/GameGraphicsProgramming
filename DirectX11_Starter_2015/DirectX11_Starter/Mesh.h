@@ -6,7 +6,8 @@
 class Mesh
 {
 public:
-	Mesh(Vertex* vertices, int numVerts, int* indices, int numIndices, ID3D11Device* device);
+	Mesh(Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device);
+	Mesh(char* filename, ID3D11Device* device);
 	~Mesh();
 
 	ID3D11Buffer* const* GetVertexBuffer() { return &vertexBuffer;  }
