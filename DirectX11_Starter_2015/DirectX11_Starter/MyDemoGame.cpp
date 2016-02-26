@@ -134,8 +134,12 @@ bool MyDemoGame::Init()
 	camera = Camera(0.0f, 0.0f, -5.0f);
 	camera.CreatePerspectiveProjectionMatrix(aspectRatio, 0.1f, 100.0f);
 
-	light1 = GameLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
+	GameLight light1 = GameLight(XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
 	light1.GetTransform().SetRotation(XMFLOAT3(1, -1, 0));
+	GameLight light2 = GameLight(XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+	light2.GetTransform().SetRotation(XMFLOAT3(1, -1, 0));
+	render->SetLight(light1, 0);
+	render->SetLight(light2, 1);
 
 	// Successfully initialized
 	return true;
@@ -181,7 +185,7 @@ void MyDemoGame::CreateGeometry()
 	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
 
 	float halfSize = 100 * 0.5f;
-	float yPos = -1;
+	float yPos = -1.5f;
 	Vertex vertices2[] =
 	{
 		{ XMFLOAT3(-halfSize, +yPos, +halfSize), normal, uv },// 0
@@ -242,21 +246,18 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	rot.x += rotRate * deltaTime;
 	rot.y += rotRate * deltaTime;
 	rot.z += rotRate * deltaTime;
+	render->GetLight(0).GetTransform().SetRotation(rot);
 	entity1->GetTransform().SetRotation(rot);
 	DirectX::XMFLOAT3 pos = entity2->GetTransform().GetPosition();
 	pos.x += 0.2f * deltaTime;
 	//entity2->GetTransform().SetPosition(pos);
 	entity3->GetTransform().SetParrent(&entity2->GetTransform());
 
-	pixelShader->SetFloat3("cameraPosition", camera.GetTransform().GetPosition());
-	pixelShader->SetData("light", &light1, sizeof(RenderLight));
 	entity1->Update();
-	pixelShader->SetFloat3("cameraPosition", camera.GetTransform().GetPosition());
-	pixelShader->SetData("light", &light1, sizeof(RenderLight));
 	entity2->Update();
-	pixelShader->SetFloat3("cameraPosition", camera.GetTransform().GetPosition());
-	pixelShader->SetData("light", &light1, sizeof(RenderLight));
 	entity3->Update();
+
+	//Temp camera and input stuff
 	LONG deltaMouseX = curMousePos.x - prevMousePos.x;
 	LONG deltaMouseY = curMousePos.y - prevMousePos.y;
 	camera.Update(deltaTime, deltaMouseX, deltaMouseY);
@@ -282,24 +283,7 @@ void MyDemoGame::DrawScene(float deltaTime, float totalTime)
 		1.0f,
 		0);
 
-
-	// Send data to shader variables
-	//  - Do this ONCE PER OBJECT you're drawing
-	//  - This is actually a complex process of copying data to a local buffer
-	//    and then copying that entire buffer to the GPU.  
-	//  - The "SimpleShader" class handles all of that for you.
-	//vertexShader->SetMatrix4x4("world", worldMatrix);
-	//vertexShader->SetMatrix4x4("view", viewMatrix);
-	//vertexShader->SetMatrix4x4("projection", projectionMatrix);
-	
-	// Set the vertex and pixel shaders to use for the next Draw() command
-	//  - These don't technically need to be set every frame...YET
-	//  - Once you start applying different shaders to different objects,
-	//    you'll need to swap the current shaders before each draw
-	//vertexShader->SetShader(true);
-	//pixelShader->SetShader(true);
-
-	render->UpdateAndRender(camera.GetViewMatrix(), camera.GetProjectionMatrix());
+	render->UpdateAndRender(camera);
 
 
 	// Present the buffer

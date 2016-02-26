@@ -17,6 +17,10 @@ static void LogText(int output) {
 	LogText(std::to_string(output));
 }
 
+static void LogText(unsigned int output) {
+	LogText(std::to_string(output));
+}
+
 static void LogText(float output) {
 	LogText(std::to_string(output));
 }

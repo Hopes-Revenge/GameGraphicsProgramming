@@ -1,4 +1,5 @@
 #include "SimpleShader.h"
+#include "Logger.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ------ BASE SIMPLE SHADER --------------------------------------------------
@@ -52,6 +53,11 @@ void ISimpleShader::CleanUp()
 	cbTable.clear();
 	samplerTable.clear();
 	textureTable.clear();
+
+	varTableINT.clear();
+	cbTableINT.clear();
+	samplerTableINT.clear();
+	textureTableINT.clear();
 }
 
 // --------------------------------------------------------
@@ -107,6 +113,10 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 		D3D11_SHADER_INPUT_BIND_DESC resourceDesc;
 		refl->GetResourceBindingDesc(r, &resourceDesc);
 
+		LogText("RESOURCE");
+		LogText(r);
+		LogText(resourceDesc.Name);
+
 		// Check the type
 		switch (resourceDesc.Type)
 		{
@@ -118,6 +128,7 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 			srv->Index = shaderResourceViews.size();	// Raw index
 
 			textureTable.insert(std::pair<std::string, SimpleSRV*>(resourceDesc.Name, srv));
+			textureTableINT.push_back(srv);
 			shaderResourceViews.push_back(srv);
 		}
 		break;
@@ -130,6 +141,7 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 			samp->Index = samplerStates.size();			// Raw index
 
 			samplerTable.insert(std::pair<std::string, SimpleSampler*>(resourceDesc.Name, samp));
+			samplerTableINT.push_back(samp);
 			samplerStates.push_back(samp);
 		}
 		break;
@@ -147,6 +159,10 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 		D3D11_SHADER_BUFFER_DESC bufferDesc;
 		cb->GetDesc(&bufferDesc);
 
+		LogText("Buffer");
+		LogText(b);
+		LogText(bufferDesc.Name);
+
 		// Get the description of the resource binding, so
 		// we know exactly how it's bound in the shader
 		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
@@ -156,6 +172,7 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 		constantBuffers[b].BindIndex = bindDesc.BindPoint;
 		constantBuffers[b].Name = bufferDesc.Name;
 		cbTable.insert(std::pair<std::string, SimpleConstantBuffer*>(bufferDesc.Name, &constantBuffers[b]));
+		cbTableINT.push_back(&constantBuffers[b]);
 
 		// Create this constant buffer
 		D3D11_BUFFER_DESC newBuffDesc;
@@ -183,6 +200,10 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 			D3D11_SHADER_VARIABLE_DESC varDesc;
 			var->GetDesc(&varDesc);
 
+			LogText("Var");
+			LogText(v);
+			LogText(varDesc.Name);
+
 			// Create the variable struct
 			SimpleShaderVariable varStruct;
 			varStruct.ConstantBufferIndex = b;
@@ -194,6 +215,7 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 
 			// Add this variable to the table
 			varTable.insert(std::pair<std::string, SimpleShaderVariable>(varName, varStruct));
+			varTableINT.push_back(varStruct);
 		}
 	}
 
@@ -222,6 +244,21 @@ SimpleShaderVariable* ISimpleShader::FindVariable(std::string name, int size)
 
 	// Grab the result from the iterator
 	SimpleShaderVariable* var = &(result->second);
+
+	// Is the data size correct ?
+	if (size > 0 && var->Size != size)
+		return 0;
+
+	// Success
+	return var;
+}
+
+SimpleShaderVariable* ISimpleShader::FindVariable(int i, int size)
+{
+	if (i < 0 || i >= varTableINT.size())
+		return 0;
+
+	SimpleShaderVariable* var = &varTableINT[i];
 
 	// Is the data size correct ?
 	if (size > 0 && var->Size != size)
@@ -336,6 +373,23 @@ bool ISimpleShader::SetData(std::string name, const void* data, unsigned int siz
 	return true;
 }
 
+bool ISimpleShader::SetData(int i, const void* data, unsigned int size)
+{
+	// Look for the variable and verify
+	SimpleShaderVariable* var = FindVariable(i, size);
+	if (var == 0)
+		return false;
+
+	// Set the data in the local data buffer
+	memcpy(
+		constantBuffers[var->ConstantBufferIndex].LocalDataBuffer + var->ByteOffset,
+		data,
+		size);
+
+	// Success
+	return true;
+}
+
 // --------------------------------------------------------
 // Sets INTEGER data
 // --------------------------------------------------------
@@ -384,6 +438,11 @@ bool ISimpleShader::SetFloat3(std::string name, const DirectX::XMFLOAT3 data)
 	return this->SetData(name, &data, sizeof(float) * 3);
 }
 
+bool ISimpleShader::SetFloat3(int i, const DirectX::XMFLOAT3 data)
+{
+	return this->SetData(i, &data, sizeof(float) * 3);
+}
+
 // --------------------------------------------------------
 // Sets a FLOAT4 variable by name in the local data buffer
 // --------------------------------------------------------
@@ -414,6 +473,11 @@ bool ISimpleShader::SetMatrix4x4(std::string name, const float data[16])
 bool ISimpleShader::SetMatrix4x4(std::string name, const DirectX::XMFLOAT4X4 data)
 {
 	return this->SetData(name, &data, sizeof(float) * 16);
+}
+
+bool ISimpleShader::SetMatrix4x4(int i, const DirectX::XMFLOAT4X4 data)
+{
+	return this->SetData(i, &data, sizeof(float) * 16);
 }
 
 // --------------------------------------------------------

@@ -54,7 +54,6 @@ private:
 	Camera camera;
 	Render* render;
 	Material* basicMaterial;
-	GameLight light1;
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;

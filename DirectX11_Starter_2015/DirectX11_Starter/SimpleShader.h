@@ -75,6 +75,7 @@ public:
 
 	// Sets arbitrary shader data
 	bool SetData(std::string name, const void* data, unsigned int size);
+	bool SetData(int i, const void* data, unsigned int size);
 
 	bool SetInt(std::string name, int data);
 	bool SetFloat(std::string name, float data);
@@ -82,10 +83,12 @@ public:
 	bool SetFloat2(std::string name, const DirectX::XMFLOAT2 data);
 	bool SetFloat3(std::string name, const float data[3]);
 	bool SetFloat3(std::string name, const DirectX::XMFLOAT3 data);
+	bool SetFloat3(int i, const DirectX::XMFLOAT3 data);
 	bool SetFloat4(std::string name, const float data[4]);
 	bool SetFloat4(std::string name, const DirectX::XMFLOAT4 data);
 	bool SetMatrix4x4(std::string name, const float data[16]);
 	bool SetMatrix4x4(std::string name, const DirectX::XMFLOAT4X4 data);
+	bool SetMatrix4x4(int i, const DirectX::XMFLOAT4X4 data);
 
 	// Setting shader resources
 	virtual bool SetShaderResourceView(std::string name, ID3D11ShaderResourceView* srv) = 0;
@@ -126,6 +129,11 @@ protected:
 	std::unordered_map<std::string, SimpleShaderVariable> varTable;
 	std::unordered_map<std::string, SimpleSRV*> textureTable;
 	std::unordered_map<std::string, SimpleSampler*> samplerTable;
+	//Trying to make an int version
+	std::vector<SimpleConstantBuffer*> cbTableINT;
+	std::vector<SimpleShaderVariable> varTableINT;
+	std::vector<SimpleSRV*> textureTableINT;
+	std::vector<SimpleSampler*> samplerTableINT;
 
 	// Pure virtual functions for dealing with shader types
 	virtual bool CreateShader(ID3DBlob* shaderBlob) = 0;
@@ -135,6 +143,7 @@ protected:
 
 	// Helpers for finding data by name
 	SimpleShaderVariable* FindVariable(std::string name, int size);
+	SimpleShaderVariable* FindVariable(int i, int size);
 	SimpleConstantBuffer* FindConstantBuffer(std::string name);
 };
 
