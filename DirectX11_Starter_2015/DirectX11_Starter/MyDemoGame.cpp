@@ -24,8 +24,9 @@
 #include "MyDemoGame.h"
 #include "Vertex.h"
 
-
+#include <fstream>
 #include <iostream>
+#include "Logger.h"
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -84,13 +85,13 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance)
 // --------------------------------------------------------
 MyDemoGame::~MyDemoGame()
 {
-	delete entity1;
-	delete entity2;
-	delete entity3;
+	for (int e = 0; e < ents.size(); e++) {
+		delete ents[e];
+	}
 
-	delete mesh1;
-	delete mesh2;
-	delete mesh3;
+	for (int m = 0; m < meshes.size(); m++) {
+		delete meshes[m];
+	}
 
 
 	delete render;
@@ -125,6 +126,7 @@ bool MyDemoGame::Init()
 
 	LoadShaders(); 
 	CreateGeometry();
+	TestLoadLevel("Assets/Maps/Untitled.txt");
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives we'll be using and how to interpret them
@@ -162,6 +164,78 @@ void MyDemoGame::LoadShaders()
 	basicMaterial = new Material(vertexShader, pixelShader);
 }
 
+void MyDemoGame::TestLoadLevel(char* mapName) {
+	std::ifstream s(mapName);
+	if (!s.is_open()) {
+		return;
+	}
+
+	int state = 0;
+	//0 is the meta data
+	//1 is the turrets
+	//2 is light
+	//3 is background
+	//4 is arena
+	char chars[400];
+	Entity* currentEntity = nullptr;
+
+	while (s.good())
+	{
+		s.getline(chars, 400);
+		std::string line(chars);
+		bool statelessRead = false;
+		//LogText(chars);
+		if (std::strstr(chars, "arena")) {
+			statelessRead = true;
+			state = 4;
+		}
+		else if (std::strstr(chars, "pos")) {
+			DirectX::XMFLOAT3 pos;
+			sscanf_s(chars, "pos %f %f %f", &pos.x, &pos.y, &pos.z);
+			if (currentEntity != nullptr) {
+				currentEntity->GetTransform().SetPosition(pos);
+			}
+			statelessRead = true;
+		}
+		else if (std::strstr(chars, "rot")) {
+			DirectX::XMFLOAT3 rot;
+			sscanf_s(chars, "rot %f %f %f", &rot.x, &rot.y, &rot.z);
+			if (currentEntity != nullptr) {
+				currentEntity->GetTransform().SetRotation(rot);
+			}
+			statelessRead = true;
+		}
+		else if (std::strstr(chars, "scl")) {
+			DirectX::XMFLOAT3 scl;
+			sscanf_s(chars, "scl %f %f %f", &scl.x, &scl.y, &scl.z);
+			if (currentEntity != nullptr) {
+				currentEntity->GetTransform().SetScale(scl);
+			}
+			statelessRead = true;
+		}
+		if (!statelessRead) {
+			switch (state)
+			{
+			case 4:
+				if (std::strstr(chars, "model")) 
+				{
+					std::string modelPath = "Assets/Models/";
+					modelPath += line.substr(6, line.length());
+					modelPath += ".obj";
+					LogText(modelPath);
+					Mesh* newMesh = new Mesh(modelPath.c_str(), device);
+					currentEntity = new Entity();
+					currentEntity->AddComponent(new DrawnMesh(render, newMesh, basicMaterial));
+					ents.push_back(currentEntity);
+					meshes.push_back(newMesh);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
 
 // --------------------------------------------------------
 // Creates the geometry we're going to draw - a single triangle for now
@@ -179,10 +253,12 @@ void MyDemoGame::CreateGeometry()
 		{ XMFLOAT3(+0.5f, +1.0f, 0.0f), normal, uv },// 3
 	};
 	UINT indices[] = { 0, 1, 2, 0, 3, 1 };
-	mesh1 = new Mesh("OBJS/helix.obj", device);
+	Mesh* mesh1 = new Mesh("Assets/Models/helix.obj", device);
 	//DrawnMesh drawnMesh1 = DrawnMesh(render, mesh1);
-	entity1 = new Entity();
+	Entity* entity1 = new Entity();
 	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
+	ents.push_back(entity1);
+	meshes.push_back(mesh1);
 
 	float halfSize = 100 * 0.5f;
 	float yPos = -1.5f;
@@ -194,9 +270,11 @@ void MyDemoGame::CreateGeometry()
 		{ XMFLOAT3(+halfSize, +yPos, +halfSize), normal, uv },// 3
 	};
 	UINT indices2[] = { 0, 1, 2, 0, 3, 1 };
-	mesh2 = new Mesh(vertices2, 4, indices2, 6, device);
-	entity2 = new Entity();
+	Mesh* mesh2 = new Mesh(vertices2, 4, indices2, 6, device);
+	Entity* entity2 = new Entity();
 	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
+	//ents.push_back(entity2);
+	meshes.push_back(mesh2);
 
 	normal = XMFLOAT3(0, 0, -1);
 	Vertex vertices3[] =
@@ -206,9 +284,11 @@ void MyDemoGame::CreateGeometry()
 		{ XMFLOAT3(+1.5f, -1.0f, +0.0f), normal, uv },// 2
 	};
 	UINT indices3[] = { 0, 1, 2 };
-	mesh3 = new Mesh("OBJS/sphere.obj", device);//vertices3, 3, indices3, 3
-	entity3 = new Entity();
+	Mesh* mesh3 = new Mesh("Assets/Models/sphere.obj", device);//vertices3, 3, indices3, 3
+	Entity* entity3 = new Entity();
 	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial));
+	ents.push_back(entity3);
+	meshes.push_back(mesh3);
 }
 
 #pragma endregion
@@ -241,21 +321,21 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
 
-	DirectX::XMFLOAT3 rot = entity1->GetTransform().GetRotation();
+	DirectX::XMFLOAT3 rot = ents[0]->GetTransform().GetRotation();
 	float rotRate = 3.0f;
 	rot.x += rotRate * deltaTime;
 	rot.y += rotRate * deltaTime;
 	rot.z += rotRate * deltaTime;
 	render->GetLight(0).GetTransform().SetRotation(rot);
-	entity1->GetTransform().SetRotation(rot);
-	DirectX::XMFLOAT3 pos = entity2->GetTransform().GetPosition();
+	ents[0]->GetTransform().SetRotation(rot);
+	DirectX::XMFLOAT3 pos = ents[1]->GetTransform().GetPosition();
 	pos.x += 0.2f * deltaTime;
 	//entity2->GetTransform().SetPosition(pos);
-	entity3->GetTransform().SetParrent(&entity2->GetTransform());
+	ents[2]->GetTransform().SetParrent(&ents[1]->GetTransform());
 
-	entity1->Update();
-	entity2->Update();
-	entity3->Update();
+	for (int e = 0; e < ents.size(); e++) {
+		ents[e]->Update();
+	}
 
 	//Temp camera and input stuff
 	LONG deltaMouseX = curMousePos.x - prevMousePos.x;

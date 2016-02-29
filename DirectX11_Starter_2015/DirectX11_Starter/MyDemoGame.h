@@ -47,6 +47,8 @@ private:
 	void LoadShaders(); 
 	void CreateGeometry();
 
+	void TestLoadLevel(char* mapName);
+
 	// Buffers to hold actual geometry data
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
@@ -54,12 +56,8 @@ private:
 	Camera camera;
 	Render* render;
 	Material* basicMaterial;
-	Mesh* mesh1;
-	Mesh* mesh2;
-	Mesh* mesh3;
-	Entity* entity1;
-	Entity* entity2;
-	Entity* entity3;
+	std::vector<Mesh*> meshes;
+	std::vector<Entity*> ents;
 
 	// Wrappers for DirectX shaders to provide simplified functionality
 	SimpleVertexShader* vertexShader;

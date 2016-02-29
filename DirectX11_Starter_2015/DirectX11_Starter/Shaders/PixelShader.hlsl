@@ -1,3 +1,5 @@
+#define TOON
+
 struct DirectionalLight {
 	float4 AmbientColor;
 	float4 DiffuseColor;
@@ -29,6 +31,35 @@ struct VertexToPixel
 	float3 worldPos		: POSITION;
 };
 
+float4 CalculateLight(DirectionalLight light, VertexToPixel input) : COLOR0
+{
+	float nDotL = dot(input.normal, normalize(-light.Direction));
+	//Comment out next line to get rid of toon shading
+#ifdef TOON
+	nDotL = smoothstep(0, 0.03f, nDotL);
+#endif
+	return light.AmbientColor + (light.DiffuseColor * saturate(nDotL));
+}
+
+float4 CalculateRimLighting(float3 dirToCamera, VertexToPixel input) : COLOR0
+{
+	//FREN
+	float bias = 0.56;
+	float scale = 0.17f;
+	float power = 3;
+	float r = 1 - saturate(bias + scale * pow(1 + dot(dirToCamera, input.normal), power));
+	return r.xxxx;
+}
+
+float4 CalculateSpecular(float3 dirToCamera, float3 reflection) : COLOR0
+{
+	float3 spec = pow(max(dot(reflection, dirToCamera), 0), 128);
+#ifdef TOON
+	spec = smoothstep(0, 0.03f, spec);
+#endif
+	return spec.xxxx;
+}
+
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
 // 
@@ -45,20 +76,10 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 dirToCamera = normalize(cameraPosition - input.worldPos);
 	//Specular
 	float3 refl = reflect(-dirToCamera, input.normal);
-	float3 spec = pow(max(dot(refl, dirToCamera), 0), 128);
-	//FREN
-	float bias = 0.56;
-	float scale = 0.17f;
-	float power = 3;
-	float r = 1 - saturate(bias + scale * pow(1 + dot(dirToCamera, input.normal), power));
-
-
 	float4 baseColor = float4(0.83f, 0.4f, 0.23f, 1);
-	//float4 otherColor = float4(0.9f, 0.9f, 0.9f, 1);
 
-	//float lightAmount = ;
-	float4 lights = light1.AmbientColor + (light1.DiffuseColor * saturate(dot(input.normal, normalize(-light1.Direction))));
-	lights += light2.AmbientColor + (light2.DiffuseColor * saturate(dot(input.normal, normalize(-light2.Direction))));
+	float4 lights = CalculateLight(light1, input);
+	lights += CalculateLight(light2, input);
 
-	return baseColor + r.xxxx + lights + spec.xxxx;
+	return (baseColor + CalculateRimLighting(dirToCamera, input) + lights + CalculateSpecular(dirToCamera, refl)) * 0.5f;
 }
