@@ -3,10 +3,11 @@
 #include <fstream>
 #include "Logger.h"
 
-Mesh::Mesh(Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device)
+Mesh::Mesh(const char* newName, Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device)
 {
 	//Set the indices
 	numIndices = newNumIndices;
+	name = newName;
 
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -36,7 +37,7 @@ Mesh::Mesh(Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3
 	HR(device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
 }
 
-Mesh::Mesh(const char * filename, ID3D11Device * device)
+Mesh::Mesh(const char* newName, const char * filename, ID3D11Device * device)
 {
 	// File input object
 	std::ifstream obj(filename); // <-- Replace filename with your parameter
@@ -157,6 +158,7 @@ Mesh::Mesh(const char * filename, ID3D11Device * device)
 	//Dont know why but when I pass the right things into the other constructor it doesnt work.
 
 	numIndices = vertCounter;
+	name = newName;
 
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;

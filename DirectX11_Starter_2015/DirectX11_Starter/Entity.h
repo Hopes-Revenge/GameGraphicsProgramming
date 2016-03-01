@@ -14,7 +14,7 @@ public:
 	void AddComponent(Component* newComponent);
 	void Update();
 
-	Transform& const GetTransform() { return transform; }
+	Transform& GetTransform() { return transform; }
 private:
 	Transform transform;
 	Component* components[MAX_NUM_COMPONENTS];

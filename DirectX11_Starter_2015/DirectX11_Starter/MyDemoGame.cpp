@@ -101,6 +101,8 @@ MyDemoGame::~MyDemoGame()
 	delete pixelShader;
 
 	delete basicMaterial;
+
+	delete res;
 }
 
 #pragma endregion
@@ -132,7 +134,7 @@ bool MyDemoGame::Init()
 	// geometric primitives we'll be using and how to interpret them
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-
+	res = new Resources(device);
 	camera = Camera(0.0f, 0.0f, -5.0f);
 	camera.CreatePerspectiveProjectionMatrix(aspectRatio, 0.1f, 100.0f);
 
@@ -220,14 +222,25 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 				if (std::strstr(chars, "model")) 
 				{
 					std::string modelPath = "Assets/Models/";
-					modelPath += line.substr(6, line.length());
+					std::string modelName = line.substr(6, line.length());
+					modelPath += modelName;
 					modelPath += ".obj";
 					LogText(modelPath);
-					Mesh* newMesh = new Mesh(modelPath.c_str(), device);
-					currentEntity = new Entity();
-					currentEntity->AddComponent(new DrawnMesh(render, newMesh, basicMaterial));
-					ents.push_back(currentEntity);
-					meshes.push_back(newMesh);
+					Mesh* newMesh = nullptr;
+					if (!res->IsMeshLoaded(modelName.c_str())) {
+						res->LoadMesh(modelName.c_str(), modelPath.c_str());
+					}
+					newMesh = res->GetMeshIfLoaded(modelName.c_str());
+					//Mesh* newMesh = new Mesh(modelPath.c_str(), device);
+					if (newMesh != nullptr) {
+						currentEntity = new Entity();
+						currentEntity->AddComponent(new DrawnMesh(render, newMesh, basicMaterial));
+						ents.push_back(currentEntity);
+					}
+					else {
+						currentEntity = nullptr;
+					}
+					//meshes.push_back(newMesh);
 				}
 				break;
 			default:
@@ -253,7 +266,7 @@ void MyDemoGame::CreateGeometry()
 		{ XMFLOAT3(+0.5f, +1.0f, 0.0f), normal, uv },// 3
 	};
 	UINT indices[] = { 0, 1, 2, 0, 3, 1 };
-	Mesh* mesh1 = new Mesh("Assets/Models/helix.obj", device);
+	Mesh* mesh1 = new Mesh("helix" ,"Assets/Models/helix.obj", device);
 	//DrawnMesh drawnMesh1 = DrawnMesh(render, mesh1);
 	Entity* entity1 = new Entity();
 	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
@@ -270,7 +283,7 @@ void MyDemoGame::CreateGeometry()
 		{ XMFLOAT3(+halfSize, +yPos, +halfSize), normal, uv },// 3
 	};
 	UINT indices2[] = { 0, 1, 2, 0, 3, 1 };
-	Mesh* mesh2 = new Mesh(vertices2, 4, indices2, 6, device);
+	Mesh* mesh2 = new Mesh("ground" ,vertices2, 4, indices2, 6, device);
 	Entity* entity2 = new Entity();
 	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
 	ents.push_back(entity2);
@@ -284,7 +297,7 @@ void MyDemoGame::CreateGeometry()
 		{ XMFLOAT3(+1.5f, -1.0f, +0.0f), normal, uv },// 2
 	};
 	UINT indices3[] = { 0, 1, 2 };
-	Mesh* mesh3 = new Mesh("Assets/Models/sphere.obj", device);//vertices3, 3, indices3, 3
+	Mesh* mesh3 = new Mesh("sphere" ,"Assets/Models/sphere.obj", device);//vertices3, 3, indices3, 3
 	Entity* entity3 = new Entity();
 	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial));
 	ents.push_back(entity3);

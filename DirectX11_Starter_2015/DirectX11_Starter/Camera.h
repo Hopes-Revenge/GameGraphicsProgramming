@@ -19,7 +19,7 @@ public:
 
 	DirectX::XMFLOAT4X4 GetViewMatrix() { return RecalculateViewMatrix(); }
 	DirectX::XMFLOAT4X4 GetProjectionMatrix() { return projectionMatrix; }
-	Transform& const GetTransform() { return transform; }
+	Transform& GetTransform() { return transform; }
 private:
 	Transform transform;
 	DirectX::XMFLOAT4X4 viewMatrix;

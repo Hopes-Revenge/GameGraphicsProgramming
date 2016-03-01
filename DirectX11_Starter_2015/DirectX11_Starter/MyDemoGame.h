@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "Material.h"
 #include "Light.h"
+#include "Resources.h"
 
 // Include run-time memory checking in debug builds, so 
 // we can be notified of memory leaks
@@ -54,6 +55,7 @@ private:
 	ID3D11Buffer* indexBuffer;
 
 	Camera camera;
+	Resources* res;
 	Render* render;
 	Material* basicMaterial;
 	std::vector<Mesh*> meshes;

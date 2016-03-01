@@ -77,6 +77,7 @@
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="DirectXGameCore.cpp" />
     <ClCompile Include="Render.cpp" />
+    <ClCompile Include="Resources.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
@@ -93,6 +94,7 @@
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="DirectXGameCore.h" />
     <ClInclude Include="Render.h" />
+    <ClInclude Include="Resources.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />

@@ -15,10 +15,10 @@ public:
 	GameLight(DirectX::XMFLOAT4 newAmbientColor, DirectX::XMFLOAT4 newDiffuseColor);
 	~GameLight();
 
-	Transform& const GetTransform() { return transform; }
+	Transform& GetTransform() { return transform; }
 	//DO NOT pass get render light directly into a shaders set data
-	RenderLight& const GetRenderLight() { return renderLight; }
-	RenderLight& const GetRenderLightData();
+	RenderLight& GetRenderLight() { return renderLight; }
+	RenderLight& GetRenderLightData();
 private:
 	RenderLight renderLight;
 	Transform transform;
