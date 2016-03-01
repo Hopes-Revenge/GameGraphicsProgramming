@@ -36,7 +36,7 @@ Mesh::Mesh(Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3
 	HR(device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
 }
 
-Mesh::Mesh(char * filename, ID3D11Device * device)
+Mesh::Mesh(const char * filename, ID3D11Device * device)
 {
 	// File input object
 	std::ifstream obj(filename); // <-- Replace filename with your parameter

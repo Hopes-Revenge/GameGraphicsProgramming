@@ -1,3 +1,4 @@
+#define TOON
 
 struct DirectionalLight {
 	float4 AmbientColor;
@@ -5,10 +6,12 @@ struct DirectionalLight {
 	float3 Direction;
 };
 
+
 cbuffer extData : register(b0)
 {
 	float3 cameraPosition;
-	DirectionalLight light;
+	DirectionalLight light1;
+	DirectionalLight light2;
 };
 
 // Struct representing the data we expect to receive from earlier pipeline stages
@@ -28,6 +31,35 @@ struct VertexToPixel
 	float3 worldPos		: POSITION;
 };
 
+float4 CalculateLight(DirectionalLight light, VertexToPixel input) : COLOR0
+{
+	float nDotL = dot(input.normal, normalize(-light.Direction));
+	//Comment out next line to get rid of toon shading
+#ifdef TOON
+	nDotL = smoothstep(0, 0.03f, nDotL);
+#endif
+	return light.AmbientColor + (light.DiffuseColor * saturate(nDotL));
+}
+
+float4 CalculateRimLighting(float3 dirToCamera, VertexToPixel input) : COLOR0
+{
+	//FREN
+	float bias = 0.56;
+	float scale = 0.17f;
+	float power = 3;
+	float r = 1 - saturate(bias + scale * pow(1 + dot(dirToCamera, input.normal), power));
+	return r.xxxx;
+}
+
+float4 CalculateSpecular(float3 dirToCamera, float3 reflection) : COLOR0
+{
+	float3 spec = pow(max(dot(reflection, dirToCamera), 0), 128);
+#ifdef TOON
+	spec = smoothstep(0, 0.03f, spec);
+#endif
+	return spec.xxxx;
+}
+
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
 // 
@@ -41,19 +73,13 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 	input.normal = normalize(input.normal);
 	
-	float lightAmount = saturate(dot(input.normal, normalize(-light.Direction)));
 	float3 dirToCamera = normalize(cameraPosition - input.worldPos);
 	//Specular
 	float3 refl = reflect(-dirToCamera, input.normal);
-	float3 spec = pow(max(dot(refl, dirToCamera), 0), 128);
-	//FREN
-	float bias = 0.0f;
-	float scale = 0.1f;
-	float power = 4;
-	float r = saturate(bias + scale * pow(1 + dot(dirToCamera, input.normal), power));
-
 	float4 baseColor = float4(0.83f, 0.4f, 0.23f, 1);
-	float4 otherColor = float4(0.9f, 0.9f, 0.9f, 1);
 
-	return (lerp(otherColor, baseColor, r) + light.AmbientColor) + (light.DiffuseColor * lightAmount) + spec.xxxx;
+	float4 lights = CalculateLight(light1, input);
+	lights += CalculateLight(light2, input);
+
+	return (baseColor + CalculateRimLighting(dirToCamera, input) + lights + CalculateSpecular(dirToCamera, refl)) * 0.5f;
 }
