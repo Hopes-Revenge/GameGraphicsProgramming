@@ -1,4 +1,4 @@
-#define TOON
+//#define TOON
 
 struct DirectionalLight {
 	float4 AmbientColor;
@@ -76,10 +76,10 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 dirToCamera = normalize(cameraPosition - input.worldPos);
 	//Specular
 	float3 refl = reflect(-dirToCamera, input.normal);
-	float4 baseColor = float4(0.83f, 0.4f, 0.23f, 1);
+	float4 baseColor = float4(0.83f, 0.83f, 0.83f, 1);
 
 	float4 lights = CalculateLight(light1, input);
 	lights += CalculateLight(light2, input);
 
-	return (baseColor + CalculateRimLighting(dirToCamera, input) + lights + CalculateSpecular(dirToCamera, refl)) * 0.5f;
+	return (baseColor + CalculateRimLighting(dirToCamera, input)) * lights + CalculateSpecular(dirToCamera, refl);
 }

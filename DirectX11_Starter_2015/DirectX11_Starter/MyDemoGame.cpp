@@ -261,7 +261,7 @@ void MyDemoGame::CreateGeometry()
 	meshes.push_back(mesh1);
 
 	float halfSize = 100 * 0.5f;
-	float yPos = -1.5f;
+	float yPos = -10.5f;
 	Vertex vertices2[] =
 	{
 		{ XMFLOAT3(-halfSize, +yPos, +halfSize), normal, uv },// 0
@@ -273,7 +273,7 @@ void MyDemoGame::CreateGeometry()
 	Mesh* mesh2 = new Mesh(vertices2, 4, indices2, 6, device);
 	Entity* entity2 = new Entity();
 	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
-	//ents.push_back(entity2);
+	ents.push_back(entity2);
 	meshes.push_back(mesh2);
 
 	normal = XMFLOAT3(0, 0, -1);

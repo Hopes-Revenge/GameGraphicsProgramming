@@ -1,10 +1,2 @@
-﻿  MyDemoGame.cpp
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\light.h(18): warning C4227: anachronism used: qualifiers on reference are ignored
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\light.h(20): warning C4227: anachronism used: qualifiers on reference are ignored
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\light.h(21): warning C4227: anachronism used: qualifiers on reference are ignored
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\camera.h(22): warning C4227: anachronism used: qualifiers on reference are ignored
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\entity.h(17): warning C4227: anachronism used: qualifiers on reference are ignored
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(88): warning C4018: '<': signed/unsigned mismatch
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(92): warning C4018: '<': signed/unsigned mismatch
-d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(336): warning C4018: '<': signed/unsigned mismatch
+﻿  compilation object save succeeded; see D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\PixelShader.cso
   DirectX11_Starter.vcxproj -> D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\DirectX11_Starter.exe
