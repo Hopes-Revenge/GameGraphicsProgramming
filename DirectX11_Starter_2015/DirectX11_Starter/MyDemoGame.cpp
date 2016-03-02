@@ -86,7 +86,7 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance)
 MyDemoGame::~MyDemoGame()
 {
 	for (int e = 0; e < ents.size(); e++) {
-		delete ents[e];
+		//delete ents[e];
 	}
 
 
@@ -175,7 +175,8 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 	//3 is background
 	//4 is arena
 	char chars[400];
-	Entity* currentEntity = nullptr;
+	//Entity currentEntity;
+	int currentEntityIndex = -1;
 
 	while (s.good())
 	{
@@ -190,24 +191,24 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 		else if (std::strstr(chars, "pos")) {
 			DirectX::XMFLOAT3 pos;
 			sscanf_s(chars, "pos %f %f %f", &pos.x, &pos.y, &pos.z);
-			if (currentEntity != nullptr) {
-				currentEntity->GetTransform().SetPosition(pos);
+			if (currentEntityIndex != -1) {
+				ents[currentEntityIndex].GetTransform().SetPosition(pos);
 			}
 			statelessRead = true;
 		}
 		else if (std::strstr(chars, "rot")) {
 			DirectX::XMFLOAT3 rot;
 			sscanf_s(chars, "rot %f %f %f", &rot.x, &rot.y, &rot.z);
-			if (currentEntity != nullptr) {
-				currentEntity->GetTransform().SetRotation(rot);
+			if (currentEntityIndex != -1) {
+				ents[currentEntityIndex].GetTransform().SetRotation(rot);
 			}
 			statelessRead = true;
 		}
 		else if (std::strstr(chars, "scl")) {
 			DirectX::XMFLOAT3 scl;
 			sscanf_s(chars, "scl %f %f %f", &scl.x, &scl.y, &scl.z);
-			if (currentEntity != nullptr) {
-				currentEntity->GetTransform().SetScale(scl);
+			if (currentEntityIndex != -1) {
+				ents[currentEntityIndex].GetTransform().SetScale(scl);
 			}
 			statelessRead = true;
 		}
@@ -225,12 +226,12 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 					}
 					newMesh = res->GetMeshIfLoaded(modelName.c_str());
 					if (newMesh != nullptr) {
-						currentEntity = new Entity();
-						currentEntity->AddComponent(new DrawnMesh(render, newMesh, basicMaterial));
-						ents.push_back(currentEntity);
+						ents.push_back(Entity());
+						currentEntityIndex = ents.size() - 1;
+						ents[currentEntityIndex].AddComponent(new DrawnMesh(render, newMesh, basicMaterial));
 					}
 					else {
-						currentEntity = nullptr;
+						currentEntityIndex = -1;
 					}
 				}
 				break;
@@ -250,9 +251,9 @@ void MyDemoGame::CreateGeometry()
 	XMFLOAT2 uv = XMFLOAT2(0, 0);
 
 	Mesh* mesh1 = res->GetMeshAndLoadIfNotFound("Helix");
-	Entity* entity1 = new Entity();
-	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
-	ents.push_back(entity1);
+	ents.push_back(Entity());
+	ents[ents.size() - 1].AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
+
 
 	float halfSize = 100 * 0.5f;
 	float yPos = -10.5f;
@@ -265,14 +266,12 @@ void MyDemoGame::CreateGeometry()
 	};
 	UINT indices2[] = { 0, 1, 2, 0, 3, 1 };
 	Mesh* mesh2 = res->AddMesh("ground" ,vertices2, 4, indices2, 6);
-	Entity* entity2 = new Entity();
-	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
-	ents.push_back(entity2);
+	ents.push_back(Entity());
+	ents[ents.size() - 1].AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
 
 	Mesh* mesh3 = res->GetMeshAndLoadIfNotFound("Sphere");//vertices3, 3, indices3, 3
-	Entity* entity3 = new Entity();
-	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial));
-	ents.push_back(entity3);
+	ents.push_back(Entity());
+	ents[ents.size() - 1].AddComponent(new DrawnMesh(render, mesh3, basicMaterial));
 }
 
 #pragma endregion
@@ -305,20 +304,20 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
 
-	DirectX::XMFLOAT3 rot = ents[0]->GetTransform().GetRotation();
+	DirectX::XMFLOAT3 rot = ents[0].GetTransform().GetRotation();
 	float rotRate = 3.0f;
 	rot.x += rotRate * deltaTime;
 	rot.y += rotRate * deltaTime;
 	rot.z += rotRate * deltaTime;
 	render->GetLight(0).GetTransform().SetRotation(rot);
-	ents[0]->GetTransform().SetRotation(rot);
-	DirectX::XMFLOAT3 pos = ents[0]->GetTransform().GetPosition();
+	ents[0].GetTransform().SetRotation(rot);
+	DirectX::XMFLOAT3 pos = ents[0].GetTransform().GetPosition();
 	pos.x += 0.2f * deltaTime;
-	ents[0]->GetTransform().SetPosition(pos);
-	ents[2]->GetTransform().SetParrent(&ents[0]->GetTransform());
+	ents[0].GetTransform().SetPosition(pos);
+	ents[2].GetTransform().SetParrent(&ents[0].GetTransform());
 
 	for (int e = 0; e < ents.size(); e++) {
-		ents[e]->Update();
+		ents[e].Update();
 	}
 
 	//Temp camera and input stuff

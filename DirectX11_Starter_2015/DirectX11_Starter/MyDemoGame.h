@@ -58,7 +58,7 @@ private:
 	Resources* res;
 	Render* render;
 	Material* basicMaterial;
-	std::vector<Entity*> ents;
+	std::vector<Entity> ents;
 
 	// Wrappers for DirectX shaders to provide simplified functionality
 	SimpleVertexShader* vertexShader;
