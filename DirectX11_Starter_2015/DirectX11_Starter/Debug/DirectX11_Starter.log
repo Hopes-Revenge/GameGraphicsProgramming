@@ -1,1 +1,4 @@
-﻿  DirectX11_Starter.vcxproj -> D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\DirectX11_Starter.exe
+﻿  MyDemoGame.cpp
+d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(88): warning C4018: '<': signed/unsigned mismatch
+d:\users\afl4947\gamegraphicsprogramming\directx11_starter_2015\directx11_starter\mydemogame.cpp(320): warning C4018: '<': signed/unsigned mismatch
+  DirectX11_Starter.vcxproj -> D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Debug\DirectX11_Starter.exe

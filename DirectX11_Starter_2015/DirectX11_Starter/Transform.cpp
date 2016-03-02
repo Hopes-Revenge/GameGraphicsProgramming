@@ -66,8 +66,22 @@ void Transform::SetScale(DirectX::XMFLOAT3 newScale)
 
 void Transform::SetParrent(Transform * newParrent)
 {
-	//TODO: we need to check to make sure we dont have a circular dependency.
+	if (newParrent == nullptr || newParrent == this) return;
+	//TODO: test this function, circular dependency issues should be fixed, but only test on trying to set a transforms parrent to itself
+	Transform* current = newParrent;
+	while(current->GetParrent() != nullptr) {
+		if (current == this) return;
+		current = current->GetParrent();
+	}
 	parrent = newParrent;
+}
+
+bool Transform::GetIsDirty()
+{
+	if (parrent == nullptr) {
+		return isDirty;
+	}
+	return isDirty || parrent->GetIsDirty();
 }
 
 DirectX::XMFLOAT3 Transform::GetForwardVector()
@@ -80,10 +94,9 @@ DirectX::XMFLOAT3 Transform::GetForwardVector()
 
 DirectX::XMFLOAT4X4 Transform::RecalculateWorldMatrix()
 {
-	//Okay I would like to change this to try to get rid of the if statement
+	if (!GetIsDirty()) return worldMatrix;//Dont know if I want to keep it.
 	DirectX::XMMATRIX allignedWorldMatrix = DirectX::XMLoadFloat4x4(&worldMatrix);
 	if (parrent == nullptr) {
-		if (!isDirty) return worldMatrix;
 		DirectX::XMMATRIX  calculatedWorldMatrix =
 			DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&scale)) * DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&rotation)) *
 			//DirectX::XMMatrixRotationX(rotation.x) * DirectX::XMMatrixRotationY(rotation.y) * DirectX::XMMatrixRotationZ(rotation.z) *
@@ -91,7 +104,6 @@ DirectX::XMFLOAT4X4 Transform::RecalculateWorldMatrix()
 			DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&position));
 		DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(calculatedWorldMatrix));
 	} else {
-		//if (!isDirty || !parrent->isDirty) return worldMatrix;//Dont know if I want to keep it.
 		DirectX::XMMATRIX  calculatedWorldMatrix =
 			DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&scale)) *
 			DirectX::XMMatrixRotationX(rotation.x) * DirectX::XMMatrixRotationY(rotation.y) * DirectX::XMMatrixRotationZ(rotation.z) *
@@ -99,6 +111,5 @@ DirectX::XMFLOAT4X4 Transform::RecalculateWorldMatrix()
 		DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(
 			DirectX::XMMatrixMultiply(DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&parrent->GetWorldMatrix())), calculatedWorldMatrix)));
 	}
-	isDirty = false;
 	return worldMatrix;
 }

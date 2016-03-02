@@ -89,10 +89,6 @@ MyDemoGame::~MyDemoGame()
 		delete ents[e];
 	}
 
-	for (int m = 0; m < meshes.size(); m++) {
-		delete meshes[m];
-	}
-
 
 	delete render;
 
@@ -125,6 +121,7 @@ bool MyDemoGame::Init()
 	//  - For your own projects, feel free to expand/replace these.
 
 	render = new Render(deviceContext);
+	res = new Resources(device);
 
 	LoadShaders(); 
 	CreateGeometry();
@@ -134,7 +131,6 @@ bool MyDemoGame::Init()
 	// geometric primitives we'll be using and how to interpret them
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	res = new Resources(device);
 	camera = Camera(0.0f, 0.0f, -5.0f);
 	camera.CreatePerspectiveProjectionMatrix(aspectRatio, 0.1f, 100.0f);
 
@@ -221,17 +217,13 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 			case 4:
 				if (std::strstr(chars, "model")) 
 				{
-					std::string modelPath = "Assets/Models/";
 					std::string modelName = line.substr(6, line.length());
-					modelPath += modelName;
-					modelPath += ".obj";
-					LogText(modelPath);
+					//LogText(modelName);
 					Mesh* newMesh = nullptr;
 					if (!res->IsMeshLoaded(modelName.c_str())) {
-						res->LoadMesh(modelName.c_str(), modelPath.c_str());
+						res->LoadMesh(modelName.c_str());
 					}
 					newMesh = res->GetMeshIfLoaded(modelName.c_str());
-					//Mesh* newMesh = new Mesh(modelPath.c_str(), device);
 					if (newMesh != nullptr) {
 						currentEntity = new Entity();
 						currentEntity->AddComponent(new DrawnMesh(render, newMesh, basicMaterial));
@@ -240,7 +232,6 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 					else {
 						currentEntity = nullptr;
 					}
-					//meshes.push_back(newMesh);
 				}
 				break;
 			default:
@@ -258,20 +249,10 @@ void MyDemoGame::CreateGeometry()
 	XMFLOAT3 normal	= XMFLOAT3(0,1, 0);
 	XMFLOAT2 uv = XMFLOAT2(0, 0);
 
-	Vertex vertices[] =
-	{
-		{ XMFLOAT3(-0.5f, +1.0f, +0.0f), normal, uv },// 0
-		{ XMFLOAT3(+0.5f, -1.0f, +0.0f), normal, uv },// 1
-		{ XMFLOAT3(-0.5f, -1.0f, +0.0f), normal, uv },// 2
-		{ XMFLOAT3(+0.5f, +1.0f, 0.0f), normal, uv },// 3
-	};
-	UINT indices[] = { 0, 1, 2, 0, 3, 1 };
-	Mesh* mesh1 = new Mesh("helix" ,"Assets/Models/helix.obj", device);
-	//DrawnMesh drawnMesh1 = DrawnMesh(render, mesh1);
+	Mesh* mesh1 = res->GetMeshAndLoadIfNotFound("Helix");
 	Entity* entity1 = new Entity();
 	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial));
 	ents.push_back(entity1);
-	meshes.push_back(mesh1);
 
 	float halfSize = 100 * 0.5f;
 	float yPos = -10.5f;
@@ -283,25 +264,15 @@ void MyDemoGame::CreateGeometry()
 		{ XMFLOAT3(+halfSize, +yPos, +halfSize), normal, uv },// 3
 	};
 	UINT indices2[] = { 0, 1, 2, 0, 3, 1 };
-	Mesh* mesh2 = new Mesh("ground" ,vertices2, 4, indices2, 6, device);
+	Mesh* mesh2 = res->AddMesh("ground" ,vertices2, 4, indices2, 6);
 	Entity* entity2 = new Entity();
 	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial));
 	ents.push_back(entity2);
-	meshes.push_back(mesh2);
 
-	normal = XMFLOAT3(0, 0, -1);
-	Vertex vertices3[] =
-	{
-		{ XMFLOAT3(-1.5f, +1.0f, +0.0f), normal, uv },// 0
-		{ XMFLOAT3(+1.5f, +1.0f, 0.0f), normal, uv },// 1
-		{ XMFLOAT3(+1.5f, -1.0f, +0.0f), normal, uv },// 2
-	};
-	UINT indices3[] = { 0, 1, 2 };
-	Mesh* mesh3 = new Mesh("sphere" ,"Assets/Models/sphere.obj", device);//vertices3, 3, indices3, 3
+	Mesh* mesh3 = res->GetMeshAndLoadIfNotFound("Sphere");//vertices3, 3, indices3, 3
 	Entity* entity3 = new Entity();
 	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial));
 	ents.push_back(entity3);
-	meshes.push_back(mesh3);
 }
 
 #pragma endregion
@@ -341,10 +312,10 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	rot.z += rotRate * deltaTime;
 	render->GetLight(0).GetTransform().SetRotation(rot);
 	ents[0]->GetTransform().SetRotation(rot);
-	DirectX::XMFLOAT3 pos = ents[1]->GetTransform().GetPosition();
+	DirectX::XMFLOAT3 pos = ents[0]->GetTransform().GetPosition();
 	pos.x += 0.2f * deltaTime;
-	//entity2->GetTransform().SetPosition(pos);
-	ents[2]->GetTransform().SetParrent(&ents[1]->GetTransform());
+	ents[0]->GetTransform().SetPosition(pos);
+	ents[2]->GetTransform().SetParrent(&ents[0]->GetTransform());
 
 	for (int e = 0; e < ents.size(); e++) {
 		ents[e]->Update();

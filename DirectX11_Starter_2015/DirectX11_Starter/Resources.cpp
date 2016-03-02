@@ -3,22 +3,27 @@
 #include <fstream>
 #include "Logger.h"
 
-
 Resources::Resources(ID3D11Device* newDevice)
 {
+	defaultModelPath = "Assets/Models/";
 	numberOfMeshes = 0;
 	device = newDevice;
+	meshNameToIndex = new std::string[MAX_NUM_MESHES];
 }
 
 
 Resources::~Resources()
 {
-	for (int m = 0; m < numberOfMeshes; ++m) {
-		delete meshes[m];
+	for (int m = 0; m < numberOfMeshes; m++) {
+		if (meshes[m] != nullptr) {
+			delete meshes[m];
+			meshes[m] = nullptr;
+		}
 	}
+	delete[] meshNameToIndex;
 }
 
-Mesh * Resources::GetMeshIfLoaded(const char * meshName)
+Mesh* Resources::GetMeshIfLoaded(const char * meshName)
 {
 	int index = FindMesh(meshName);
 	if (index != -1) {
@@ -27,13 +32,29 @@ Mesh * Resources::GetMeshIfLoaded(const char * meshName)
 	return nullptr;
 }
 
+Mesh * Resources::GetMeshAndLoadIfNotFound(const char * meshName)
+{
+	int index = FindMesh(meshName);
+	if (index != -1) {
+		return meshes[index];
+	}
+	LoadMesh(meshName);
+	return GetMeshIfLoaded(meshName);
+}
+
 bool Resources::IsMeshLoaded(const char * meshName)
 {
 	return FindMesh(meshName) != -1;
 }
 
-void Resources::LoadMesh(const char * meshName, const char* filePath)
+void Resources::LoadMesh(std::string meshName)
 {
+	int index = FindMesh(meshName);
+	if (index != -1) {
+		LogText("--Not loading Model--//Trying to load a model with a duplicate name, model will not be loaded.");
+		return;
+	}
+	std::string filePath = defaultModelPath + meshName + ".obj";
 	// File input object
 	std::ifstream obj(filePath); // <-- Replace filename with your parameter
 								 // Check for successful open
@@ -149,28 +170,41 @@ void Resources::LoadMesh(const char * meshName, const char* filePath)
 	//    can be used directly for the index buffer: &indices[0] is the first int
 	//
 	// - "vertCounter" is BOTH the number of vertices and the number of indices
-	if (vertCounter >= 0 && numberOfMeshes + 1 >= MAX_NUM_MESHES) {
-		Mesh* mesh = new Mesh(meshName, &verts[0], vertCounter, &indices[0], vertCounter, device);
-		AddMesh(mesh);
+	if (vertCounter >= 0 && numberOfMeshes + 1 < MAX_NUM_MESHES) {
+		int index = GetNextMeshIndex();
+		if (index != -1) {
+			AddMesh(meshName, &verts[0], vertCounter, &indices[0], vertCounter);
+		}
 	}
 }
 
-void Resources::AddMesh(Mesh * mesh)
+Mesh* Resources::AddMesh(std::string meshName, Vertex * vertices, int numVerts, UINT * indices, int newNumIndices)
 {
-	if (mesh == nullptr) return;
+	int index = GetNextMeshIndex();
+	if (index != -1) {
+		meshes[index] = new Mesh(&vertices[0], numVerts, &indices[0], newNumIndices, device);
+		meshNameToIndex[index] = meshName;
+		numberOfMeshes++;
+		return meshes[index];
+	}
+	return nullptr;
+}
+
+int Resources::GetNextMeshIndex()
+{
 	if (numberOfMeshes + 1 >= MAX_NUM_MESHES) {
 		LogText("--Max Meshes Reached--//Maximum unique number of meshes loaded. Consider loading less or increase the amount of mesh that can be stored.");
-		return;
+		return -1;
 	}
-	meshes[numberOfMeshes] = mesh;
-	++numberOfMeshes;
+	
+	return numberOfMeshes;
 }
 
 //Finds the first mesh of the given name
-int Resources::FindMesh(const char * meshName)
+int Resources::FindMesh(std::string meshName)
 {
 	for (int m = 0; m < numberOfMeshes; m++) {
-		if (meshes[m] != nullptr && std::strcmp(meshName, meshes[m]->GetName()) == 0) {
+		if (meshNameToIndex[m].compare(meshName) == 0) {
 			return m;
 		}
 	}

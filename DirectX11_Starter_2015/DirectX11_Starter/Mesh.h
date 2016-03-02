@@ -6,18 +6,18 @@
 class Mesh
 {
 public:
-	Mesh(const char* newName, Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device);
-	Mesh(const char* newName, const char* filename, ID3D11Device* device);
+	Mesh(Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device);
+	Mesh();
 	~Mesh();
+	
+	//void InitNewData(Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device);
 
 	ID3D11Buffer* const* GetVertexBuffer() { return &vertexBuffer;  }
 	ID3D11Buffer* GetIndexBuffer() const { return indexBuffer; }
 	int GetNumberOfIndices() { return numIndices; }
-	const char* const GetName() { return name; }
 private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 	int numIndices;
-	const char* name;
 };
 

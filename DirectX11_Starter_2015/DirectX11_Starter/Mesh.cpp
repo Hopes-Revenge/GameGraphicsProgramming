@@ -3,15 +3,15 @@
 #include <fstream>
 #include "Logger.h"
 
-Mesh::Mesh(const char* newName, Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device)
+Mesh::Mesh(Vertex* vertices, int numVerts, UINT* indices, int newNumIndices, ID3D11Device* device)
 {
+	//InitNewData(vertices, numVerts, indices, newNumIndices, device);
 	//Set the indices
 	numIndices = newNumIndices;
-	name = newName;
 
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex) * numVerts; 
+	vbd.ByteWidth = sizeof(Vertex) * numVerts;
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;
@@ -37,7 +37,14 @@ Mesh::Mesh(const char* newName, Vertex* vertices, int numVerts, UINT* indices, i
 	HR(device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
 }
 
-Mesh::Mesh(const char* newName, const char * filename, ID3D11Device * device)
+Mesh::Mesh()
+{
+	numIndices = 0;
+	vertexBuffer = nullptr;
+	indexBuffer = nullptr;
+}
+
+/*Mesh::Mesh(const char * filename, ID3D11Device * device)
 {
 	// File input object
 	std::ifstream obj(filename); // <-- Replace filename with your parameter
@@ -158,7 +165,6 @@ Mesh::Mesh(const char* newName, const char * filename, ID3D11Device * device)
 	//Dont know why but when I pass the right things into the other constructor it doesnt work.
 
 	numIndices = vertCounter;
-	name = newName;
 
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -186,7 +192,7 @@ Mesh::Mesh(const char* newName, const char * filename, ID3D11Device * device)
 	initialIndexData.pSysMem = &indices[0];
 
 	HR(device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
-}
+}*/
 
 
 Mesh::~Mesh()
@@ -194,3 +200,40 @@ Mesh::~Mesh()
 	ReleaseMacro(vertexBuffer);
 	ReleaseMacro(indexBuffer);
 }
+
+/*void Mesh::InitNewData(Vertex * vertices, int numVerts, UINT * indices, int newNumIndices, ID3D11Device * device)
+{
+	//Release what ever was in here
+	ReleaseMacro(vertexBuffer);
+	ReleaseMacro(indexBuffer);
+
+	//Set the indices
+	numIndices = newNumIndices;
+
+	D3D11_BUFFER_DESC vbd;
+	vbd.Usage = D3D11_USAGE_IMMUTABLE;
+	vbd.ByteWidth = sizeof(Vertex) * numVerts;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+	vbd.MiscFlags = 0;
+	vbd.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA initialVertexData;
+	initialVertexData.pSysMem = vertices;
+
+	HR(device->CreateBuffer(&vbd, &initialVertexData, &vertexBuffer));
+
+
+	D3D11_BUFFER_DESC ibd;
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;
+	ibd.ByteWidth = sizeof(UINT) * newNumIndices;
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0;
+	ibd.MiscFlags = 0;
+	ibd.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA initialIndexData;
+	initialIndexData.pSysMem = indices;
+
+	HR(device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
+}*/
