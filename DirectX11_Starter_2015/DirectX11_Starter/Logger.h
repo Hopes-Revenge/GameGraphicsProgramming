@@ -1,9 +1,6 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <Windows.h>
-#include <DirectXMath.h>
-
 #define logWideChar(out) { OutputDebugString(out); OutputDebugString(L"\n"); }
 
 static void LogText_C(const char* output) {

@@ -72,6 +72,7 @@ public:
 	void SetShader(bool copyData = true);
 	void CopyAllBufferData();
 	void CopyBufferData(std::string bufferName);
+	void CopyBufferData(int i);
 
 	// Sets arbitrary shader data
 	bool SetData(std::string name, const void* data, unsigned int size);
@@ -92,7 +93,9 @@ public:
 
 	// Setting shader resources
 	virtual bool SetShaderResourceView(std::string name, ID3D11ShaderResourceView* srv) = 0;
+	virtual bool SetShaderResourceView(int i, ID3D11ShaderResourceView* srv) = 0;
 	virtual bool SetSamplerState(std::string name, ID3D11SamplerState* samplerState) = 0;
+	virtual bool SetSamplerState(int i, ID3D11SamplerState* samplerState) = 0;
 
 	// Getting data about variables and resources
 	const SimpleShaderVariable* GetVariableInfo(std::string name);
@@ -145,6 +148,7 @@ protected:
 	SimpleShaderVariable* FindVariable(std::string name, int size);
 	SimpleShaderVariable* FindVariable(int i, int size);
 	SimpleConstantBuffer* FindConstantBuffer(std::string name);
+	SimpleConstantBuffer* FindConstantBuffer(int i);
 };
 
 // --------------------------------------------------------
@@ -160,7 +164,9 @@ public:
 	ID3D11InputLayout* GetInputLayout() { return inputLayout; }
 
 	bool SetShaderResourceView(std::string name, ID3D11ShaderResourceView* srv);
+	bool SetShaderResourceView(int i, ID3D11ShaderResourceView* srv);
 	bool SetSamplerState(std::string name, ID3D11SamplerState* samplerState);
+	bool SetSamplerState(int i, ID3D11SamplerState* samplerState);
 
 protected:
 	ID3D11InputLayout* inputLayout;
@@ -182,7 +188,9 @@ public:
 	ID3D11PixelShader* GetDirectXShader() { return shader; }
 
 	bool SetShaderResourceView(std::string name, ID3D11ShaderResourceView* srv);
+	bool SetShaderResourceView(int i, ID3D11ShaderResourceView* srv);
 	bool SetSamplerState(std::string name, ID3D11SamplerState* samplerState);
+	bool SetSamplerState(int i, ID3D11SamplerState* samplerState);
 
 protected:
 	ID3D11PixelShader* shader;

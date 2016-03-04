@@ -285,6 +285,13 @@ SimpleConstantBuffer* ISimpleShader::FindConstantBuffer(std::string name)
 	return result->second;
 }
 
+SimpleConstantBuffer * ISimpleShader::FindConstantBuffer(int i)
+{
+	if (i < 0 || i >= cbTableINT.size())
+		return 0;
+	return cbTableINT[i];
+}
+
 // --------------------------------------------------------
 // Sets the shader and constant buffers in DirectX
 //
@@ -318,6 +325,20 @@ void ISimpleShader::CopyBufferData(std::string bufferName)
 
 	// Check for the buffer
 	SimpleConstantBuffer* cb = this->FindConstantBuffer(bufferName);
+	if (!cb) return;
+
+	// Copy the data and get out
+	deviceContext->UpdateSubresource(
+		cb->ConstantBuffer, 0, 0,
+		cb->LocalDataBuffer, 0, 0);
+}
+
+void ISimpleShader::CopyBufferData(int i)
+{
+	if (!shaderValid) return;
+
+	// Check for the buffer
+	SimpleConstantBuffer* cb = this->FindConstantBuffer(i);
 	if (!cb) return;
 
 	// Copy the data and get out
@@ -787,6 +808,20 @@ bool SimpleVertexShader::SetShaderResourceView(std::string name, ID3D11ShaderRes
 	return true;
 }
 
+bool SimpleVertexShader::SetShaderResourceView(int i, ID3D11ShaderResourceView * srv)
+{
+	// Look for the variable and verify
+	const SimpleSRV* srvInfo = GetShaderResourceViewInfo(i);
+	if (srvInfo == 0)
+		return false;
+
+	// Set the shader resource view
+	deviceContext->VSSetShaderResources(srvInfo->BindIndex, 1, &srv);
+
+	// Success
+	return true;
+}
+
 // --------------------------------------------------------
 // Sets a sampler state in the vertex shader stage
 //
@@ -799,6 +834,20 @@ bool SimpleVertexShader::SetSamplerState(std::string name, ID3D11SamplerState* s
 {
 	// Look for the variable and verify
 	const SimpleSampler* sampInfo = GetSamplerInfo(name);
+	if (sampInfo == 0)
+		return false;
+
+	// Set the shader resource view
+	deviceContext->VSSetSamplers(sampInfo->BindIndex, 1, &samplerState);
+
+	// Success
+	return true;
+}
+
+bool SimpleVertexShader::SetSamplerState(int i, ID3D11SamplerState * samplerState)
+{
+	// Look for the variable and verify
+	const SimpleSampler* sampInfo = GetSamplerInfo(i);
 	if (sampInfo == 0)
 		return false;
 
@@ -905,6 +954,20 @@ bool SimplePixelShader::SetShaderResourceView(std::string name, ID3D11ShaderReso
 	return true;
 }
 
+bool SimplePixelShader::SetShaderResourceView(int i, ID3D11ShaderResourceView * srv)
+{
+	// Look for the variable and verify
+	const SimpleSRV* srvInfo = GetShaderResourceViewInfo(i);
+	if (srvInfo == 0)
+		return false;
+
+	// Set the shader resource view
+	deviceContext->PSSetShaderResources(srvInfo->BindIndex, 1, &srv);
+
+	// Success
+	return true;
+}
+
 // --------------------------------------------------------
 // Sets a sampler state in the pixel shader stage
 //
@@ -917,6 +980,20 @@ bool SimplePixelShader::SetSamplerState(std::string name, ID3D11SamplerState* sa
 {
 	// Look for the variable and verify
 	const SimpleSampler* sampInfo = GetSamplerInfo(name);
+	if (sampInfo == 0)
+		return false;
+
+	// Set the shader resource view
+	deviceContext->PSSetSamplers(sampInfo->BindIndex, 1, &samplerState);
+
+	// Success
+	return true;
+}
+
+bool SimplePixelShader::SetSamplerState(int i, ID3D11SamplerState * samplerState)
+{
+	// Look for the variable and verify
+	const SimpleSampler* sampInfo = GetSamplerInfo(i);
 	if (sampInfo == 0)
 		return false;
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "Logger.h"
-#include "Entity.h"
-#include "Component.h"
+
+class Entity;
+class Component;
 
 class EntitySystem
 {
@@ -14,7 +14,7 @@ public:
 	Entity* AddEntity();
 	Entity* EnableEntity(int index);//Enables an entity
 	void AddComponentToEntity(int index, Component* addedComponent);//Adds component at index
-	//Adds Component at last active index
+																	//Adds Component at last active index
 	void AddComponentToEntity(Component* addedComponent);
 	Entity* GetEntity(int index);
 

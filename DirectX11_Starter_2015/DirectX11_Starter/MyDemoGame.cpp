@@ -28,6 +28,8 @@
 #include <iostream>
 #include "Logger.h"
 
+#include "WICTextureLoader.h"
+
 // For the DirectX Math library
 using namespace DirectX;
 
@@ -98,6 +100,8 @@ MyDemoGame::~MyDemoGame()
 
 	delete basicMaterial;
 
+	shaderResourceView->Release();
+	samplerState->Release();
 	delete res;
 }
 
@@ -159,7 +163,18 @@ void MyDemoGame::LoadShaders()
 	pixelShader = new SimplePixelShader(device, deviceContext);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
 
-	basicMaterial = new Material(vertexShader, pixelShader);
+
+	CreateWICTextureFromFile(device, deviceContext, L"Assets/Textures/Checker.png", NULL, &shaderResourceView);
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&samplerDesc, &samplerState);
+
+
+	basicMaterial = new Material(vertexShader, pixelShader, shaderResourceView, samplerState);
 }
 
 void MyDemoGame::TestLoadLevel(char* mapName) {

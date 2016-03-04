@@ -58,6 +58,8 @@ private:
 	Resources* res;
 	Render* render;
 	Material* basicMaterial;
+	ID3D11ShaderResourceView* shaderResourceView;
+	ID3D11SamplerState* samplerState;
 	std::vector<Entity*> ents;
 
 	// Wrappers for DirectX shaders to provide simplified functionality

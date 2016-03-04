@@ -1,5 +1,7 @@
 #include "Render.h"
 
+#include "Logger.h"
+
 Render::Render(ID3D11DeviceContext* newDeviceContext)
 {
 	deviceContext = newDeviceContext;
@@ -25,16 +27,19 @@ void Render::AddToRenderList(DrawnMesh& drawnMesh)
 
 void Render::UpdateAndRender(Camera& camera)
 {
-	RenderInfo renderInfo = RenderInfo();
 	renderInfo.deviceContext = deviceContext;
 	renderInfo.viewMatrix = camera.GetViewMatrix();
 	renderInfo.projectionMatrix = camera.GetProjectionMatrix();
 	renderInfo.cameraPosition = camera.GetTransform().GetPosition();
 	renderInfo.light1 = lights[0].GetRenderLightData();
 	renderInfo.light2 = lights[1].GetRenderLightData();
+	renderInfo.currentVertexShader = nullptr;
+	renderInfo.currentPixelShader = nullptr;
+	renderInfo.currentMesh = nullptr;
 
 	//vertShader->SetMatrix4x4("view", renderInfo.viewMatrix);
 	//vertShader->SetMatrix4x4("projection", renderInfo.projectionMatrix);
+	//LogText("Frame");
 	for (int r = 0; r < endIndex; r++) {
 		renderList[r]->Draw(renderInfo);
 	}

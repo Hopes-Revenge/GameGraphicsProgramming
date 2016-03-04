@@ -9,7 +9,9 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-	Reset();
+	for (int c = 0; c < numberOfComponents; ++c) {
+		delete components[c];
+	}
 }
 
 void Entity::AddComponent(Component* newComponent)
@@ -23,17 +25,5 @@ void Entity::Update()
 {
 	for (int c = 0; c < numberOfComponents; ++c) {
 		components[c]->Update();
-	}
-}
-
-void Entity::Reset()
-{
-	numberOfComponents = 0;
-	//TODO: reset the transform
-	for (int c = 0; c < numberOfComponents; ++c) {
-		if (components[c] != nullptr) {
-			delete components[c];
-			components[c] = nullptr;
-		}
 	}
 }

@@ -25,20 +25,18 @@ DrawnMesh::~DrawnMesh()
 #include "Entity.h"
 
 //This is just temporary, I still have to figure out how exactly I want to do rendering
-void DrawnMesh::Draw(RenderInfo renderInfo)
+void DrawnMesh::Draw(RenderInfo& renderInfo)
 {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	//renderInfo.vertexShader->SetMatrix4x4("world", GetTransform().GetWorldMatrix());
-
-	//renderInfo.vertexShader->CopyAllBufferData();
-
 	material->PrepareMaterial(renderInfo, GetTransform());
 
-	renderInfo.deviceContext->IASetVertexBuffers(0, 1, mesh->GetVertexBuffer(), &stride, &offset);
-	renderInfo.deviceContext->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
+	if (renderInfo.currentMesh != mesh) {
+		renderInfo.deviceContext->IASetVertexBuffers(0, 1, mesh->GetVertexBuffer(), &stride, &offset);
+		renderInfo.deviceContext->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+		renderInfo.currentMesh = mesh;
+	}
 	renderInfo.deviceContext->DrawIndexed(mesh->GetNumberOfIndices(), 0, 0);
 }
 

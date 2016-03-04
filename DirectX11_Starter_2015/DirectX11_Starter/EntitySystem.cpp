@@ -1,4 +1,6 @@
 #include "EntitySystem.h"
+#include "Entity.h"
+#include "Component.h"
 
 EntitySystem::EntitySystem(const int newMaxNumberOfEntsCanHold)
 {
@@ -27,7 +29,7 @@ Entity* EntitySystem::AddEntity()
 {
 	Entity* addedEnt = EnableEntity(numEnabledEnts);
 	if (addedEnt != nullptr) {
-		addedEnt->Reset();
+		//addedEnt->Reset();
 	}
 	return addedEnt;
 }
@@ -43,7 +45,8 @@ Entity* EntitySystem::EnableEntity(int index)
 		std::swap(ents[index], ents[numEnabledEnts]);
 		numEnabledEnts++;
 		return &ents[index];
-	} else if (index >= numEnts && index < maxNumberOfEntsCanHold) {
+	}
+	else if (index >= numEnts && index < maxNumberOfEntsCanHold) {
 		std::swap(ents[index], ents[numEnabledEnts]);
 		std::swap(ents[index], ents[numEnts]);
 		numEnts++;

@@ -6,6 +6,8 @@ struct DirectionalLight {
 	float3 Direction;
 };
 
+Texture2D diffuseTexture : register(t0);
+SamplerState samplerState : register(s0);
 
 cbuffer extData : register(b0)
 {
@@ -28,17 +30,19 @@ struct VertexToPixel
 	//  v    v                v
 	float4 position		: SV_POSITION;
 	float3 normal		: NORMAL;
+	float2 uv			: TEXCOORD;
 	float3 worldPos		: POSITION;
 };
 
-float4 CalculateLight(DirectionalLight light, VertexToPixel input) : COLOR0
+float4 CalculateLight(DirectionalLight light, VertexToPixel input, inout float4 baseColor) : COLOR0
 {
 	float nDotL = dot(input.normal, normalize(-light.Direction));
 	//Comment out next line to get rid of toon shading
 #ifdef TOON
 	nDotL = smoothstep(0, 0.03f, nDotL);
 #endif
-	return light.AmbientColor + (light.DiffuseColor * saturate(nDotL));
+	baseColor += light.AmbientColor;
+	return (light.DiffuseColor * saturate(nDotL));
 }
 
 float4 CalculateRimLighting(float3 dirToCamera, VertexToPixel input) : COLOR0
@@ -76,10 +80,10 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 dirToCamera = normalize(cameraPosition - input.worldPos);
 	//Specular
 	float3 refl = reflect(-dirToCamera, input.normal);
-	float4 baseColor = float4(0.83f, 0.83f, 0.83f, 1);
+	float4 baseColor = diffuseTexture.Sample(samplerState, input.uv);
 
-	float4 lights = CalculateLight(light1, input);
-	lights += CalculateLight(light2, input);
+	float4 lights = CalculateLight(light1, input, baseColor);
+	lights += CalculateLight(light2, input, baseColor);
 
 	return (baseColor + CalculateRimLighting(dirToCamera, input)) * lights + CalculateSpecular(dirToCamera, refl);
 }

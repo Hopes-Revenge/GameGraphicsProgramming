@@ -13,7 +13,6 @@ public:
 
 	void AddComponent(Component* newComponent);
 	void Update();
-	void Reset();
 
 	Transform& GetTransform() { return transform; }
 private:

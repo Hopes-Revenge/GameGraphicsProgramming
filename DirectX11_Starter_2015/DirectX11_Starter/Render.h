@@ -18,6 +18,10 @@ struct RenderInfo {
 	//Light stuff
 	RenderLight light1;
 	RenderLight light2;
+
+	SimpleVertexShader* currentVertexShader;
+	SimplePixelShader* currentPixelShader;
+	Mesh* currentMesh;
 };
 
 class Render
@@ -40,5 +44,7 @@ private:
 	DrawnMesh* renderList[MAX_NUM_OF_RENDERED_OBJECTS];
 	GameLight lights[MAX_NUM_OF_LIGHTS];
 	int endIndex;
+
+	RenderInfo renderInfo;
 };
 
