@@ -19,8 +19,7 @@ struct RenderInfo {
 	RenderLight light1;
 	RenderLight light2;
 
-	SimpleVertexShader* currentVertexShader;
-	SimplePixelShader* currentPixelShader;
+	Material* currentMaterial;
 	Mesh* currentMesh;
 };
 

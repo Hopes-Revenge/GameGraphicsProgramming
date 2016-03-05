@@ -33,8 +33,8 @@ void Render::UpdateAndRender(Camera& camera)
 	renderInfo.cameraPosition = camera.GetTransform().GetPosition();
 	renderInfo.light1 = lights[0].GetRenderLightData();
 	renderInfo.light2 = lights[1].GetRenderLightData();
-	renderInfo.currentVertexShader = nullptr;
-	renderInfo.currentPixelShader = nullptr;
+	renderInfo.currentMaterial = nullptr;
+	//renderInfo.currentPixelShader = nullptr;
 	renderInfo.currentMesh = nullptr;
 
 	//vertShader->SetMatrix4x4("view", renderInfo.viewMatrix);

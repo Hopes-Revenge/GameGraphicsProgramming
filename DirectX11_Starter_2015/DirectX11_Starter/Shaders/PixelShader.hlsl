@@ -1,19 +1,26 @@
 //#define TOON
 
-struct DirectionalLight {
+struct Light {
 	float4 AmbientColor;
 	float4 DiffuseColor;
-	float3 Direction;
+	//Holds differnet data depending on type
+	//Holds direction for Direction Light
+	//Holds position for point Light
+	float3 Fluid3;
+	//0 is Directional Light
+	//1 is Point Light
+	int Type;
 };
 
 Texture2D diffuseTexture : register(t0);
+Texture2D normalMap : register(t1);
 SamplerState samplerState : register(s0);
 
 cbuffer extData : register(b0)
 {
 	float3 cameraPosition;
-	DirectionalLight light1;
-	DirectionalLight light2;
+	Light light1;
+	Light light2;
 };
 
 // Struct representing the data we expect to receive from earlier pipeline stages
@@ -31,18 +38,32 @@ struct VertexToPixel
 	float4 position		: SV_POSITION;
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
+	float3 tangent		: TANGENT;
 	float3 worldPos		: POSITION;
 };
 
-float4 CalculateLight(DirectionalLight light, VertexToPixel input, inout float4 baseColor) : COLOR0
+float4 CalculateLight(Light light, VertexToPixel input, inout float4 baseColor) : COLOR0
 {
-	float nDotL = dot(input.normal, normalize(-light.Direction));
-	//Comment out next line to get rid of toon shading
+	float nDotL = 0;
+	baseColor += light.AmbientColor;
+	if (light.Type == 0)// Direction
+	{
+		nDotL = dot(input.normal, normalize(-light.Fluid3));
+
+	} 
+	else if (light.Type == 1)// Point
+	{
+		//float3 dirToPointLight = normalize(light.Fluid3 - input.worldPos);
+		//float pointNdotL = saturate(dot(input.normal, dirToPointLight));
+		//nDotL = pointNdotL;
+		nDotL = dot(input.normal, normalize(light.Fluid3 - input.worldPos)) / length(light.Fluid3 - input.worldPos) * 2;
+	}
+
 #ifdef TOON
 	nDotL = smoothstep(0, 0.03f, nDotL);
 #endif
-	baseColor += light.AmbientColor;
-	return (light.DiffuseColor * saturate(nDotL));
+
+	return (light.DiffuseColor * saturate(nDotL) * baseColor);
 }
 
 float4 CalculateRimLighting(float3 dirToCamera, VertexToPixel input) : COLOR0
@@ -64,6 +85,18 @@ float4 CalculateSpecular(float3 dirToCamera, float3 reflection) : COLOR0
 	return spec.xxxx;
 }
 
+float3 CalculateNormalFromMap(VertexToPixel input) : NORMAL
+{
+	//Get the normal from the map and unpack it to the range [-1, 1]
+	float3 mapNormal = normalMap.Sample(samplerState, input.uv).rgb * 2 - 1;
+	//Make sure the normal and the tangent are orthogonal 
+	float3 tangent = normalize(input.tangent - input.normal * dot(input.tangent, input.normal));
+	return normalize(mul(mapNormal,
+		//Normal Tangent and BiTangent Matrix
+		float3x3(input.normal,tangent, cross(tangent, input.normal))
+		));
+}
+
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
 // 
@@ -76,14 +109,17 @@ float4 CalculateSpecular(float3 dirToCamera, float3 reflection) : COLOR0
 float4 main(VertexToPixel input) : SV_TARGET
 {
 	input.normal = normalize(input.normal);
+	input.normal = CalculateNormalFromMap(input);
 	
 	float3 dirToCamera = normalize(cameraPosition - input.worldPos);
 	//Specular
 	float3 refl = reflect(-dirToCamera, input.normal);
 	float4 baseColor = diffuseTexture.Sample(samplerState, input.uv);
+	baseColor = (baseColor + CalculateRimLighting(dirToCamera, input));
 
-	float4 lights = CalculateLight(light1, input, baseColor);
+	float4 lights = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	//lights += CalculateLight(light1, input, baseColor);
 	lights += CalculateLight(light2, input, baseColor);
 
-	return (baseColor + CalculateRimLighting(dirToCamera, input)) * lights + CalculateSpecular(dirToCamera, refl);
+	return  lights;// +CalculateSpecular(dirToCamera, refl);
 }

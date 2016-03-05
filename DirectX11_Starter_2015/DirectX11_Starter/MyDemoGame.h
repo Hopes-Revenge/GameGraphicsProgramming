@@ -57,8 +57,12 @@ private:
 	Camera camera;
 	Resources* res;
 	Render* render;
-	Material* basicMaterial;
-	ID3D11ShaderResourceView* shaderResourceView;
+	Material* basicMaterial1;
+	Material* basicMaterial2;
+	ID3D11ShaderResourceView* texture1SRC;
+	ID3D11ShaderResourceView* texture1NSRC;//Normal
+	ID3D11ShaderResourceView* texture2SRC;
+	ID3D11ShaderResourceView* texture2NSRC;//Normal
 	ID3D11SamplerState* samplerState;
 	std::vector<Entity*> ents;
 

@@ -2,17 +2,23 @@
 #include <DirectXMath.h>
 #include "Transform.h"
 
+const int LIGHT_DIRECTIONAL = 0;
+const int LIGHT_POINT = 1;
+
 struct RenderLight {
 	DirectX::XMFLOAT4 AmbientColor;
 	DirectX::XMFLOAT4 DiffuseColor;
-	DirectX::XMFLOAT3 Direction;
+	DirectX::XMFLOAT3 Fluid3;
+	int Type;
 };
 
 class GameLight
 {
 public:
+
+
 	GameLight();
-	GameLight(DirectX::XMFLOAT4 newAmbientColor, DirectX::XMFLOAT4 newDiffuseColor);
+	GameLight(int type, DirectX::XMFLOAT4 newAmbientColor, DirectX::XMFLOAT4 newDiffuseColor);
 	~GameLight();
 
 	Transform& GetTransform() { return transform; }
