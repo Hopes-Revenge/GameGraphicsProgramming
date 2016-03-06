@@ -143,7 +143,7 @@ bool MyDemoGame::Init()
 	camera.CreatePerspectiveProjectionMatrix(aspectRatio, 0.1f, 100.0f);
 
 	GameLight light1 = GameLight(LIGHT_DIRECTIONAL ,XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f));
-	light1.GetTransform().SetRotation(XMFLOAT3(1, -1, 0));
+	light1.GetTransform().SetRotation(XMFLOAT3(1, 0, 0));
 	GameLight light2 = GameLight(LIGHT_POINT ,XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), XMFLOAT4(0.4f, 0.8f, 0.4f, 1.0f));
 	//light2.GetTransform().SetRotation(XMFLOAT3(1, -1, 0));
 	render->SetLight(light1, 0);
@@ -170,8 +170,8 @@ void MyDemoGame::LoadShaders()
 
 	CreateWICTextureFromFile(device, deviceContext, L"Assets/Textures/BrickOldMixedSize.jpg", NULL, &texture1SRC);
 	CreateWICTextureFromFile(device, deviceContext, L"Assets/Textures/Normal_BrickOldMixedSize.jpg", NULL, &texture1NSRC);
-	CreateWICTextureFromFile(device, deviceContext, L"Assets/Textures/WoodPlanksBare.jpg", NULL, &texture2SRC);
-	CreateWICTextureFromFile(device, deviceContext, L"Assets/Textures/Normal_WoodPlanksBare.jpg", NULL, &texture2NSRC);
+	CreateWICTextureFromFile(device, deviceContext, L"Assets/Textures/RockSmooth.jpg", NULL, &texture2SRC);
+	CreateWICTextureFromFile(device, deviceContext, L"Assets/Textures/Normal_RockSmooth.jpg", NULL, &texture2NSRC);
 	//Sampler State
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -270,7 +270,7 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 // --------------------------------------------------------
 void MyDemoGame::CreateGeometry()
 {
-	XMFLOAT3 normal	= XMFLOAT3(0, -1, 0);
+	XMFLOAT3 normal	= XMFLOAT3(0, 1, 0);
 	XMFLOAT3 tangent = XMFLOAT3(0, 0, 1);
 
 	Mesh* mesh1 = res->GetMeshAndLoadIfNotFound("Helix");
@@ -278,8 +278,8 @@ void MyDemoGame::CreateGeometry()
 	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial1));
 	ents.push_back(entity1);
 
-	float halfSize = 100 * 0.5f;
-	float yPos = -10.5f;
+	float halfSize = 10 * 0.5f;
+	float yPos = -2.5f;
 	Vertex vertices2[] =
 	{
 		{ XMFLOAT3(-halfSize, +yPos, +halfSize), normal, XMFLOAT2(0, 1), tangent },// 0
@@ -290,10 +290,10 @@ void MyDemoGame::CreateGeometry()
 	UINT indices2[] = { 0, 1, 2, 0, 3, 1 };
 	Mesh* mesh2 = res->AddMesh("ground" ,vertices2, 4, indices2, 6);
 	Entity* entity2 = new Entity();
-	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial1));
+	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial2));
 	ents.push_back(entity2);
 
-	Mesh* mesh3 = res->GetMeshAndLoadIfNotFound("Cube");//vertices3, 3, indices3, 3
+	Mesh* mesh3 = res->GetMeshAndLoadIfNotFound("Sphere");//vertices3, 3, indices3, 3
 	Entity* entity3 = new Entity();
 	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial1));
 	ents.push_back(entity3);
@@ -339,15 +339,11 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	//cpos.y = 0;
 	//cpos.z = 0;
 	render->GetLight(1).GetTransform().SetPosition(cpos);
-	LogText("Frame");
-	LogText(render->GetLight(1).GetRenderLightData().Fluid3);
-	LogText(camera.GetTransform().GetPosition());
 	ents[0]->GetTransform().SetRotation(rot);
 	DirectX::XMFLOAT3 pos = ents[0]->GetTransform().GetPosition();
 	pos.x += 0.08f * deltaTime;
 	ents[0]->GetTransform().SetPosition(pos);
-	ents[2]->GetTransform().SetParrent(&render->GetLight(1).GetTransform());
-	//ents[2]->GetTransform().SetParrent(&ents[0]->GetTransform());
+	ents[2]->GetTransform().SetParrent(&ents[0]->GetTransform());
 
 	for (int e = 0; e < ents.size(); e++) {
 		ents[e]->Update();

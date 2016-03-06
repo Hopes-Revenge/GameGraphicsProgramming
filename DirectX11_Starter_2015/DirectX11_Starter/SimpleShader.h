@@ -101,6 +101,7 @@ public:
 	const SimpleShaderVariable* GetVariableInfo(std::string name);
 
 	const SimpleSRV* GetShaderResourceViewInfo(std::string name);
+	const SimpleSRV* GetShaderResourceView(int index);
 	const SimpleSRV* GetShaderResourceViewInfo(unsigned int index);
 	unsigned int GetShaderResourceViewCount() { return textureTable.size(); }
 

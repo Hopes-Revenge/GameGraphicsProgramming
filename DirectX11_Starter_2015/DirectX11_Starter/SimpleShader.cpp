@@ -114,8 +114,6 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 		refl->GetResourceBindingDesc(r, &resourceDesc);
 
 		LogText("RESOURCE");
-		LogText(r);
-		LogText(resourceDesc.Name);
 
 		// Check the type
 		switch (resourceDesc.Type)
@@ -128,6 +126,9 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 			srv->Index = shaderResourceViews.size();	// Raw index
 
 			textureTable.insert(std::pair<std::string, SimpleSRV*>(resourceDesc.Name, srv));
+			LogText("Texture");
+			LogText(textureTableINT.size());
+			//LogText(resourceDesc.Name);
 			textureTableINT.push_back(srv);
 			shaderResourceViews.push_back(srv);
 		}
@@ -141,11 +142,14 @@ bool ISimpleShader::LoadShaderFile(LPCWSTR shaderFile)
 			samp->Index = samplerStates.size();			// Raw index
 
 			samplerTable.insert(std::pair<std::string, SimpleSampler*>(resourceDesc.Name, samp));
+			LogText("Sampler");
+			LogText(samplerTableINT.size());
 			samplerTableINT.push_back(samp);
 			samplerStates.push_back(samp);
 		}
 		break;
 		}
+		LogText(resourceDesc.Name);
 	}
 
 	// Loop through all constant buffers
@@ -524,6 +528,12 @@ const SimpleSRV* ISimpleShader::GetShaderResourceViewInfo(std::string name)
 
 	// Success
 	return result->second;
+}
+
+const SimpleSRV * ISimpleShader::GetShaderResourceView(int index)
+{
+	if (index < 0 || index >= textureTableINT.size()) return nullptr;
+	return textureTableINT[index];
 }
 
 
@@ -957,7 +967,7 @@ bool SimplePixelShader::SetShaderResourceView(std::string name, ID3D11ShaderReso
 bool SimplePixelShader::SetShaderResourceView(int i, ID3D11ShaderResourceView * srv)
 {
 	// Look for the variable and verify
-	const SimpleSRV* srvInfo = GetShaderResourceViewInfo(i);
+	const SimpleSRV* srvInfo = GetShaderResourceView(i);
 	if (srvInfo == 0)
 		return false;
 

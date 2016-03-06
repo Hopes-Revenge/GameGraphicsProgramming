@@ -22,6 +22,8 @@ Material::~Material()
 
 void Material::PrepareMaterial(RenderInfo& renderInfo, Transform& transform)
 {
+	//The numbers only work if everything is passed in correctly into the shader 
+
 	//"world" = 0
 	//"view" = 1
 	//"projection" = 2
