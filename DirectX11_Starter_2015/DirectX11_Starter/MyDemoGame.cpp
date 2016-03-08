@@ -200,7 +200,6 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 	//4 is arena
 	char chars[400];
 	Entity* currentEntity = nullptr;
-
 	while (s.good())
 	{
 		s.getline(chars, 400);

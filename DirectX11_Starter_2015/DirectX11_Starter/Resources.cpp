@@ -62,7 +62,8 @@ void Resources::LoadMesh(std::string meshName)
 		LogText("--ERROR--//Cant find file.");
 		return;
 	}
-
+	LogText("LOADING MODEL");
+	LogText(meshName);
 	// Variables used while reading the file
 	std::vector<DirectX::XMFLOAT3> positions;     // Positions from the file
 	std::vector<DirectX::XMFLOAT3> normals;       // Normals from the file

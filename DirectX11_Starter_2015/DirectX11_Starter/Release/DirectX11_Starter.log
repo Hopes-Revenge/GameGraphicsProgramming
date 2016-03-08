@@ -1,3 +1,9 @@
-﻿D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\DirectX11_Starter\Shaders\PixelShader.hlsl(33,2-33): error X3017: cannot implicitly convert from 'const float2' to 'float4'
-  
-  compilation failed; no code produced
+﻿  MyDemoGame.cpp
+MyDemoGame.cpp(90): warning C4018: '<': signed/unsigned mismatch
+MyDemoGame.cpp(349): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  2 of 2548 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    12 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  DirectX11_Starter.vcxproj -> D:\Users\afl4947\GameGraphicsProgramming\DirectX11_Starter_2015\Release\DirectX11_Starter.exe
