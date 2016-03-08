@@ -9,6 +9,7 @@
 #include "DrawnMesh.h"
 #include "Render.h"
 #include "Entity.h"
+#include "EntitySystem.h"
 #include "Camera.h"
 #include "Material.h"
 #include "Light.h"
@@ -64,7 +65,7 @@ private:
 	ID3D11ShaderResourceView* texture2SRC;
 	ID3D11ShaderResourceView* texture2NSRC;//Normal
 	ID3D11SamplerState* samplerState;
-	std::vector<Entity*> ents;
+	EntitySystem* entSys;
 
 	// Wrappers for DirectX shaders to provide simplified functionality
 	SimpleVertexShader* vertexShader;

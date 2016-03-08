@@ -27,19 +27,22 @@ rot -5.960464E-08 1.570796 4.712389
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 9 3 8
 rot 4.712734 0 0
-scl 1 1 1
+scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 3 0 8
 rot 4.712734 0 0
-scl 1 1 1
+scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 9 -3 8
 rot 4.712734 0 0
-scl 1 1 1
+scl 1 0.9999999 0.9999999
 model TestWall
 material Toon
 pos 4.5 -5 8
@@ -47,6 +50,7 @@ rot 0 1.570796 4.712389
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 6 0 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -92,11 +96,13 @@ rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 3 3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -3 3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -132,6 +138,7 @@ rot 0 1.570796 4.712389
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -9 0 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -157,21 +164,25 @@ rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 6 -3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -6 -3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -3 -3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 0 0 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -182,6 +193,7 @@ rot 0 1.570796 4.712389
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 3 -3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -207,6 +219,7 @@ rot 1.570451 3.141592 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -6 0 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -227,6 +240,7 @@ rot -5.960464E-08 4.712389 1.570796
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 0 -3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -257,6 +271,7 @@ rot 0 1.570796 4.712389
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 6 3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -277,11 +292,13 @@ rot 0 1.570796 4.712389
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 9 0 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos 0 3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -292,11 +309,13 @@ rot -5.960464E-08 4.712389 1.570796
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -9 3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -3 0 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -327,6 +346,7 @@ rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -9 -3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999
@@ -342,6 +362,7 @@ rot 0 1.570796 4.712389
 scl 1 1 1
 model TestFloor
 material Toon
+texture BrickOldMixedSize0012_1_S
 pos -6 3 8
 rot 4.712734 0 0
 scl 1 0.9999999 0.9999999

@@ -19,5 +19,6 @@ private:
 	Transform transform;
 	Component* components[MAX_NUM_COMPONENTS];
 	int numberOfComponents;
+
 };
 

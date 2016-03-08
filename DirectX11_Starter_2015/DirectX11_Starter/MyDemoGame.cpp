@@ -87,9 +87,9 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance)
 // --------------------------------------------------------
 MyDemoGame::~MyDemoGame()
 {
-	for (int e = 0; e < ents.size(); e++) {
+	/*for (int e = 0; e < ents.size(); e++) {
 		delete ents[e];
-	}
+	}*/
 
 
 	delete render;
@@ -101,11 +101,28 @@ MyDemoGame::~MyDemoGame()
 	delete basicMaterial1;
 	delete basicMaterial2;
 
-	texture1SRC->Release();
-	texture1NSRC->Release();
-	texture2SRC->Release();
-	texture2NSRC->Release();
-	samplerState->Release();
+	if (texture1SRC != nullptr) {
+		texture1SRC->Release();
+		texture1SRC = nullptr;
+	}
+	if (texture1NSRC != nullptr) {
+		texture1NSRC->Release();
+		texture1NSRC = nullptr;
+	}
+	if (texture2SRC != nullptr) {
+		texture2SRC->Release();
+		texture2SRC = nullptr;
+	}
+	if (texture2NSRC != nullptr) {
+		texture2NSRC->Release();
+		texture2NSRC = nullptr;
+	}
+	if (samplerState != nullptr) {
+		samplerState->Release();
+		samplerState = nullptr;
+	}
+	
+	delete entSys;
 	delete res;
 }
 
@@ -130,6 +147,7 @@ bool MyDemoGame::Init()
 
 	render = new Render(deviceContext);
 	res = new Resources(device);
+	entSys = new EntitySystem(200);
 
 	LoadShaders(); 
 	CreateGeometry();
@@ -248,9 +266,9 @@ void MyDemoGame::TestLoadLevel(char* mapName) {
 					}
 					newMesh = res->GetMeshIfLoaded(modelName.c_str());
 					if (newMesh != nullptr) {
-						currentEntity = new Entity();
+						currentEntity = entSys->AddEntity();
 						currentEntity->AddComponent(new DrawnMesh(render, newMesh, basicMaterial2));
-						ents.push_back(currentEntity);
+						//ents.push_back(currentEntity);
 					}
 					else {
 						currentEntity = nullptr;
@@ -273,9 +291,9 @@ void MyDemoGame::CreateGeometry()
 	XMFLOAT3 tangent = XMFLOAT3(0, 0, 1);
 
 	Mesh* mesh1 = res->GetMeshAndLoadIfNotFound("Helix");
-	Entity* entity1 = new Entity();
+	Entity* entity1 = entSys->AddEntity();
 	entity1->AddComponent(new DrawnMesh(render, mesh1, basicMaterial1));
-	ents.push_back(entity1);
+	//ents.push_back(entity1);
 
 	float halfSize = 10 * 0.5f;
 	float yPos = -2.5f;
@@ -288,14 +306,14 @@ void MyDemoGame::CreateGeometry()
 	};
 	UINT indices2[] = { 0, 1, 2, 0, 3, 1 };
 	Mesh* mesh2 = res->AddMesh("ground" ,vertices2, 4, indices2, 6);
-	Entity* entity2 = new Entity();
+	Entity* entity2 = entSys->AddEntity();
 	entity2->AddComponent(new DrawnMesh(render, mesh2, basicMaterial2));
-	ents.push_back(entity2);
+	//ents.push_back(entity2);
 
 	Mesh* mesh3 = res->GetMeshAndLoadIfNotFound("Sphere");//vertices3, 3, indices3, 3
-	Entity* entity3 = new Entity();
+	Entity* entity3 = entSys->AddEntity();
 	entity3->AddComponent(new DrawnMesh(render, mesh3, basicMaterial1));
-	ents.push_back(entity3);
+	//ents.push_back(entity3);
 }
 
 #pragma endregion
@@ -328,7 +346,7 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
 
-	DirectX::XMFLOAT3 rot = ents[0]->GetTransform().GetRotation();
+	DirectX::XMFLOAT3 rot = entSys->GetEntity(0)->GetTransform().GetRotation();
 	float rotRate = 0.5f;
 	rot.x += rotRate * deltaTime;
 	rot.y += rotRate * deltaTime;
@@ -338,15 +356,16 @@ void MyDemoGame::UpdateScene(float deltaTime, float totalTime)
 	//cpos.y = 0;
 	//cpos.z = 0;
 	render->GetLight(1).GetTransform().SetPosition(cpos);
-	ents[0]->GetTransform().SetRotation(rot);
-	DirectX::XMFLOAT3 pos = ents[0]->GetTransform().GetPosition();
+	entSys->GetEntity(0)->GetTransform().SetRotation(rot);
+	DirectX::XMFLOAT3 pos = entSys->GetEntity(0)->GetTransform().GetPosition();
 	pos.x += 0.08f * deltaTime;
-	ents[0]->GetTransform().SetPosition(pos);
-	ents[2]->GetTransform().SetParrent(&ents[0]->GetTransform());
+	entSys->GetEntity(0)->GetTransform().SetPosition(pos);
+	entSys->GetEntity(2)->GetTransform().SetParrent(&entSys->GetEntity(0)->GetTransform());
 
-	for (int e = 0; e < ents.size(); e++) {
+	entSys->Update();
+	/*for (int e = 0; e < ents.size(); e++) {
 		ents[e]->Update();
-	}
+	}*/
 
 	//Temp camera and input stuff
 	LONG deltaMouseX = curMousePos.x - prevMousePos.x;
